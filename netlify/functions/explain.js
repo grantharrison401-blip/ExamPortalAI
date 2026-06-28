@@ -1,6 +1,7 @@
 exports.handler = async (event) => {
   try {
-    const data = JSON.parse(event.body);
+
+    const data = event.body ? JSON.parse(event.body) : {};
 
     const question = data.question || "";
     const answer = data.answer || "";
