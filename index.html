@@ -1,0 +1,2252 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="theme-color" content="#070914"/>
+<title>Shoheb's Exam Portal</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap');
+  @import url('https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css');
+
+  :root{
+    --primary:#6d5dfc; --primary2:#06b6d4; --violet:#a855f7;
+    --ink:#0f172a; --ink-soft:#374151; --ink-mute:#64748b; --ink-faint:#94a3b8;
+    --glass:#ffffff; --line:rgba(15,23,42,.06);
+    --r-lg:22px; --r-md:16px; --r-sm:11px;
+    --ease:cubic-bezier(.22,1,.36,1);
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+
+  body{
+    font-family:'Inter',system-ui,sans-serif;color:var(--ink);
+    background-color:#eef2ff;min-height:100vh;position:relative;overflow-x:hidden;
+    background-image:linear-gradient(rgba(15,23,42,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(15,23,42,.05) 1px,transparent 1px);
+    background-size:42px 42px;
+  }
+  body::before,body::after{content:'';position:fixed;border-radius:50%;filter:blur(90px);z-index:-2;opacity:.18;pointer-events:none;}
+  body::before{width:560px;height:560px;top:-180px;left:-140px;background:radial-gradient(circle,var(--primary),transparent 70%);animation:float1 16s ease-in-out infinite;}
+  body::after{width:620px;height:620px;bottom:-200px;right:-160px;background:radial-gradient(circle,var(--primary2),transparent 70%);animation:float2 18s ease-in-out infinite;}
+
+  /* ── DARK MODE body override ── */
+  body.dark{
+    background-color:#070914;
+    background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+    background-size:42px 42px;
+  }
+  body.dark::before{opacity:.55;}
+  body.dark::after{opacity:.55;}
+  @keyframes float1{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(60px,40px) scale(1.1);}}
+  @keyframes float2{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-50px,-30px) scale(1.08);}}
+
+  .screen{min-height:100vh;animation:screenIn .45s var(--ease);}
+  @keyframes screenIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  .hide{display:none!important;}
+
+  ::selection{background:rgba(109,93,252,.35);}
+  ::-webkit-scrollbar{width:10px;height:10px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:rgba(109,93,252,.45);border-radius:10px;}
+  ::-webkit-scrollbar-thumb:hover{background:rgba(109,93,252,.65);}
+
+  .home{
+    background:radial-gradient(circle at 25% 18%,rgba(109,93,252,.12),transparent 55%),radial-gradient(circle at 82% 78%,rgba(6,182,212,.1),transparent 55%),linear-gradient(160deg,#eef2ff 0%,#f0f9ff 50%,#f5f3ff 100%);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;text-align:center;
+  }
+  .home h1{
+    font-family:'Space Grotesk',sans-serif;font-size:34px;font-weight:800;letter-spacing:-1px;margin:14px 0 6px;
+    background:linear-gradient(135deg,#3730a3 10%,#6d5dfc 50%,#0891b2 90%);-webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .home p{color:rgba(15,23,42,.55);font-size:14px;margin-bottom:40px;letter-spacing:.2px;}
+
+  /* Dark mode home */
+  body.dark .home{
+    background:radial-gradient(circle at 25% 18%,rgba(109,93,252,.35),transparent 55%),radial-gradient(circle at 82% 78%,rgba(6,182,212,.3),transparent 55%),linear-gradient(160deg,#070914 0%,#0b1024 50%,#060912 100%);
+  }
+  body.dark .home h1{
+    background:linear-gradient(135deg,#fff 10%,#c7d2fe 50%,#67e8f9 90%);-webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  body.dark .home p{color:rgba(255,255,255,.55);}
+  .home-icon{font-size:62px;filter:drop-shadow(0 0 26px rgba(109,93,252,.7));animation:iconPulse 3.2s ease-in-out infinite;}
+  @keyframes iconPulse{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-6px) scale(1.05);}}
+  .home-cards{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;}
+  .hcard{
+    border-radius:var(--r-lg);padding:30px 42px;cursor:pointer;min-width:170px;text-align:center;font-family:inherit;
+    backdrop-filter:blur(14px);transition:transform .3s var(--ease),box-shadow .3s var(--ease),background .3s var(--ease),border-color .3s var(--ease);
+  }
+  .hcard:hover{transform:translateY(-6px);}
+  .hcard.student{background:linear-gradient(155deg,rgba(109,93,252,.92),rgba(6,182,212,.88));color:#fff;box-shadow:0 12px 40px rgba(109,93,252,.45),0 0 0 1px rgba(255,255,255,.08) inset;}
+  .hcard.student:hover{box-shadow:0 18px 54px rgba(109,93,252,.6),0 0 0 1px rgba(255,255,255,.14) inset;}
+  body.dark .hcard.admin{background:rgba(255,255,255,.05);color:#fff;border:2px solid rgba(255,255,255,.16);}
+  body.dark .hcard.admin:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.32);}
+  .hcard.admin{background:rgba(15,23,42,.05);color:#0f172a;border:2px solid rgba(15,23,42,.14);}
+  .hcard.admin:hover{background:rgba(15,23,42,.09);border-color:rgba(15,23,42,.28);}
+  .hcard-icon{font-size:40px;margin-bottom:10px;}
+  .hcard h2{font-size:18px;font-weight:700;margin-bottom:4px;font-family:'Space Grotesk',sans-serif;}
+  .hcard span{font-size:12px;opacity:.8;}
+
+  .hdr{background:linear-gradient(120deg,#eef2ff 0%,#e0e7ff 60%,#e0f2fe 100%);color:#0f172a;padding:20px 22px;position:relative;overflow:hidden;border-bottom:1px solid rgba(15,23,42,.08);}
+  .hdr::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 90% 0%,rgba(6,182,212,.1),transparent 60%);pointer-events:none;}
+  .hdr-back{background:none;border:none;color:rgba(15,23,42,.5);cursor:pointer;font-size:13px;margin-bottom:8px;padding:0;font-family:inherit;transition:color .2s;position:relative;z-index:1;}
+  .hdr-back:hover{color:#0f172a;}
+  .hdr h1{font-size:20px;font-weight:700;margin:0;font-family:'Space Grotesk',sans-serif;position:relative;z-index:1;}
+  .hdr p{font-size:12px;opacity:.55;margin:3px 0 0;position:relative;z-index:1;}
+  .hdr-row{display:flex;align-items:center;justify-content:space-between;position:relative;z-index:1;}
+  body.dark .hdr{background:linear-gradient(120deg,#0b0e1a 0%,#141a33 60%,#0e1830 100%);color:#fff;border-bottom:1px solid rgba(255,255,255,.06);}
+  body.dark .hdr::after{background:radial-gradient(circle at 90% 0%,rgba(6,182,212,.25),transparent 60%);}
+  body.dark .hdr-back{color:rgba(255,255,255,.55);}
+  body.dark .hdr-back:hover{color:#fff;}
+
+  .card{background:var(--glass);border-radius:var(--r-lg);border:1px solid var(--line);box-shadow:0 1px 2px rgba(15,23,42,.04),0 18px 40px -14px rgba(20,20,60,.22);padding:24px;}
+  .wrap{padding:24px 20px 48px;max-width:860px;margin:0 auto;}
+
+  .btn{border:none;border-radius:var(--r-sm);padding:12px 20px;font-weight:600;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-family:inherit;transition:transform .18s var(--ease),box-shadow .25s var(--ease);}
+  .btn:hover{transform:translateY(-2px);}
+  .btn:active{transform:translateY(0) scale(.98);}
+  .btn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+  .btn.blue{background:linear-gradient(135deg,#4f7cff,#6d5dfc);color:#fff;box-shadow:0 6px 20px rgba(79,124,255,.35);}
+  .btn.blue:hover{box-shadow:0 10px 28px rgba(79,124,255,.5);}
+  .btn.green{background:linear-gradient(135deg,#22d3a8,#10b981);color:#fff;box-shadow:0 6px 20px rgba(16,185,129,.3);}
+  .btn.green:hover{box-shadow:0 10px 28px rgba(16,185,129,.45);}
+  .btn.red{background:linear-gradient(135deg,#fb7185,#ef4444);color:#fff;box-shadow:0 6px 20px rgba(239,68,68,.3);}
+  .btn.red:hover{box-shadow:0 10px 28px rgba(239,68,68,.45);}
+  .btn.amber{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#1f2937;box-shadow:0 6px 20px rgba(245,158,11,.3);}
+  .btn.amber:hover{box-shadow:0 10px 28px rgba(245,158,11,.45);}
+  .btn.purple{background:linear-gradient(135deg,#c084fc,#8b5cf6);color:#fff;box-shadow:0 6px 20px rgba(139,92,246,.3);}
+  .btn.purple:hover{box-shadow:0 10px 28px rgba(139,92,246,.45);}
+  .btn.dark{background:linear-gradient(135deg,#1e293b,#0b1024);color:#fff;box-shadow:0 6px 20px rgba(0,0,0,.3);}
+  .btn.ghost{background:rgba(15,23,42,.06);color:#334155;}
+  .btn.ghost:hover{background:rgba(15,23,42,.1);}
+  .btn.full{width:100%;justify-content:center;padding:14px 18px;}
+  .btn.sm{padding:8px 13px;font-size:12px;}
+
+  .flabel{display:block;font-weight:600;margin-bottom:7px;color:var(--ink-soft);font-size:13px;}
+  .finput{width:100%;padding:12px 14px;border:1.5px solid rgba(15,23,42,.12);border-radius:var(--r-sm);font-size:14px;outline:none;font-family:inherit;color:var(--ink);background:#fff;transition:border-color .2s,box-shadow .2s;}
+  .finput:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(109,93,252,.13);}
+  textarea.finput{resize:vertical;}
+  .fgroup{margin-bottom:16px;}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;margin-bottom:24px;}
+  .stat{background:var(--glass);border-radius:var(--r-md);box-shadow:0 1px 2px rgba(15,23,42,.04),0 14px 30px -12px rgba(20,20,60,.2);padding:18px;text-align:center;border:1px solid var(--line);transition:transform .25s var(--ease);}
+  .stat:hover{transform:translateY(-3px);}
+  .stat .si{font-size:26px;}
+  .stat .sv{font-size:27px;font-weight:800;line-height:1.2;font-family:'Space Grotesk',sans-serif;}
+  .stat .sl{font-size:12px;color:var(--ink-mute);margin-top:3px;}
+
+  .exam-item{background:var(--glass);border-radius:var(--r-md);box-shadow:0 1px 2px rgba(15,23,42,.04),0 14px 30px -12px rgba(20,20,60,.18);padding:18px 20px;margin-bottom:12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;border:1px solid var(--line);transition:transform .2s var(--ease);}
+  .exam-item:hover{transform:translateY(-2px);}
+  .exam-meta{flex:1;min-width:200px;}
+  .exam-meta h3{font-size:15px;color:var(--ink);margin:0 0 5px;font-family:'Space Grotesk',sans-serif;}
+  .exam-meta .tags{color:var(--ink-mute);font-size:12px;display:flex;gap:12px;flex-wrap:wrap;}
+  .badge{border-radius:20px;padding:3px 11px;font-size:11px;font-weight:700;letter-spacing:.2px;}
+  .badge.active{background:linear-gradient(135deg,#d1fae5,#a7f3d0);color:#059669;}
+  .badge.off{background:linear-gradient(135deg,#fee2e2,#fecaca);color:#dc2626;}
+  .exam-actions{display:flex;gap:7px;flex-wrap:wrap;}
+
+  .sexam-card{background:var(--glass);border-radius:var(--r-md);box-shadow:0 1px 2px rgba(15,23,42,.04),0 14px 30px -12px rgba(20,20,60,.18);padding:18px 20px;margin-bottom:12px;border:1px solid var(--line);cursor:pointer;text-align:left;display:flex;align-items:center;gap:14px;width:100%;font-family:inherit;transition:transform .25s var(--ease),box-shadow .25s var(--ease);}
+  .sexam-card:hover{transform:translateY(-3px);box-shadow:0 1px 2px rgba(15,23,42,.04),0 22px 44px -12px rgba(109,93,252,.35);}
+
+  .qnav{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px;}
+  .qbtn{width:36px;height:36px;border-radius:10px;border:1.5px solid;cursor:pointer;font-weight:700;font-size:12px;font-family:inherit;transition:all .2s var(--ease);}
+  .qbtn:hover{transform:translateY(-2px);}
+  .qbtn.answered{border-color:#10b981;background:linear-gradient(135deg,#d1fae5,#bbf7d0);color:#059669;}
+  .qbtn.current{border-color:var(--primary);background:linear-gradient(135deg,#6d5dfc,#06b6d4);color:#fff;box-shadow:0 4px 14px rgba(109,93,252,.5);}
+  .qbtn.unanswered{border-color:rgba(15,23,42,.12);background:#fff;color:var(--ink-faint);}
+
+  .opt-btn{border-radius:var(--r-md);padding:14px 16px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:12px;width:100%;margin-bottom:10px;font-family:inherit;font-size:14px;transition:all .2s var(--ease);text-transform:none;word-break:break-word;}
+  .opt-btn:hover{transform:translateX(3px);}
+  .opt-label{width:34px;height:34px;border-radius:10px;border:1.5px solid;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;transition:all .2s var(--ease);}
+
+  .timer-box{border-radius:var(--r-sm);padding:8px 16px;border:1.5px solid;text-align:center;transition:all .3s;}
+  .timer-box .tv{font-size:22px;font-weight:800;letter-spacing:1px;font-variant-numeric:tabular-nums;font-family:'Space Grotesk',sans-serif;}
+  .timer-box .tl{font-size:10px;color:var(--ink-mute);text-transform:uppercase;letter-spacing:.5px;}
+  @keyframes pulseTimer{0%,100%{transform:scale(1);}50%{transform:scale(1.04);}}
+
+  .pbar-wrap{height:5px;background:rgba(15,23,42,.07);overflow:hidden;}
+  .pbar{height:100%;background:linear-gradient(90deg,#6d5dfc,#06b6d4);transition:width .4s var(--ease);position:relative;overflow:hidden;}
+  .pbar::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);animation:shimmer 2s linear infinite;}
+  @keyframes shimmer{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
+
+  .exam-hdr{background:rgba(255,255,255,.97);backdrop-filter:blur(14px);box-shadow:0 2px 16px rgba(15,23,42,.08);position:sticky;top:0;z-index:10;}
+  body.dark .exam-hdr{background:rgba(15,22,40,.97);}
+  .exam-hdr-inner{display:flex;align-items:center;gap:12px;padding:12px 18px;}
+
+  .result-stats{display:flex;justify-content:center;gap:0;margin-bottom:22px;}
+  .rstat{flex:1;padding:0 14px;text-align:center;border-right:1px solid rgba(15,23,42,.08);}
+  .rstat:last-child{border-right:none;}
+  .rstat .rv{font-size:38px;font-weight:900;line-height:1;font-family:'Space Grotesk',sans-serif;}
+  .rstat .rs{font-size:11px;color:var(--ink-mute);margin-top:3px;letter-spacing:.3px;}
+
+  .modal-bg{position:fixed;inset:0;background:rgba(6,7,13,.65);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:999;padding:20px;animation:fadeBg .25s;}
+  @keyframes fadeBg{from{opacity:0;}to{opacity:1;}}
+  .modal-card{background:#fff;border-radius:var(--r-lg);box-shadow:0 30px 70px -10px rgba(0,0,0,.45);padding:26px;max-width:360px;width:100%;animation:modalIn .3s var(--ease);}
+  @keyframes modalIn{from{opacity:0;transform:translateY(14px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+
+  .qa-item{padding:11px 0;border-bottom:1px solid rgba(15,23,42,.07);}
+  .qa-item:last-child{border:none;}
+  .qa-row{display:flex;gap:10px;align-items:flex-start;}
+  .qa-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;}
+  .qa-dot.ok{background:linear-gradient(135deg,#d1fae5,#a7f3d0);color:#059669;}
+  .qa-dot.wrong{background:linear-gradient(135deg,#fee2e2,#fecaca);color:#dc2626;}
+  .qa-dot.skip{background:#f1f5f9;color:var(--ink-mute);}
+
+  .opts-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+  .opt-row{display:flex;gap:8px;align-items:center;}
+  .opt-key{width:38px;height:38px;border-radius:10px;border:1.5px solid;cursor:pointer;font-weight:700;font-size:15px;font-family:inherit;transition:all .2s var(--ease);}
+  .opt-key:hover{transform:translateY(-2px);}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{padding:10px 14px;text-align:left;font-weight:700;color:var(--ink-soft);border-bottom:2px solid rgba(15,23,42,.09);background:rgba(15,23,42,.025);white-space:nowrap;}
+  td{padding:10px 14px;border-bottom:1px solid rgba(15,23,42,.06);}
+  tr:hover td{background:rgba(109,93,252,.035);}
+
+  .login-wrap{min-height:100vh;background:radial-gradient(circle at 20% 15%,rgba(109,93,252,.12),transparent 50%),radial-gradient(circle at 85% 80%,rgba(6,182,212,.1),transparent 50%),linear-gradient(160deg,#eef2ff,#f0f9ff);display:flex;align-items:center;justify-content:center;padding:24px;}
+  body.dark .login-wrap{background:radial-gradient(circle at 20% 15%,rgba(109,93,252,.3),transparent 50%),radial-gradient(circle at 85% 80%,rgba(6,182,212,.25),transparent 50%),linear-gradient(160deg,#070914,#0b1024);}
+
+  @media(max-width:600px){
+    .home h1{font-size:26px;}
+    .hcard{padding:24px 30px;min-width:130px;}
+    .exam-item{flex-direction:column;align-items:flex-start;}
+    .result-stats{gap:0;}
+    .rstat .rv{font-size:30px;}
+    .opts-grid{grid-template-columns:1fr;}
+    body{background-size:30px 30px;}
+  }
+
+  /* ── TOAST ── */
+  #toast-container{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:10px;pointer-events:none;max-width:320px;}
+  .toast{background:#1e293b;color:#fff;border-radius:14px;padding:13px 18px;font-size:13px;font-weight:500;box-shadow:0 8px 30px rgba(0,0,0,.4);transform:translateY(16px);opacity:0;transition:all .35s var(--ease);border-left:4px solid var(--primary);pointer-events:auto;display:flex;align-items:center;gap:10px;}
+  .toast.show{transform:translateY(0);opacity:1;}
+  .toast.t-success{border-left-color:#10b981;}
+  .toast.t-error{border-left-color:#ef4444;}
+  .toast.t-warning{border-left-color:#f59e0b;}
+  .toast .t-icon{font-size:16px;flex-shrink:0;}
+  .toast .t-close{margin-left:auto;background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;font-size:15px;line-height:1;padding:0;}
+  .toast .t-close:hover{color:#fff;}
+
+  /* ── LOADING OVERLAY ── */
+  #loading-overlay{position:fixed;inset:0;background:rgba(7,9,20,.78);backdrop-filter:blur(5px);z-index:9998;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+  .loader{width:46px;height:46px;border:4px solid rgba(109,93,252,.2);border-top-color:#6d5dfc;border-radius:50%;animation:spin .72s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  #loading-overlay p{color:rgba(255,255,255,.65);font-size:14px;letter-spacing:.2px;}
+
+  /* ── DARK MODE TOGGLE ── */
+  .dm-toggle{position:fixed;bottom:22px;left:22px;background:rgba(15,23,42,.08);border:1px solid rgba(15,23,42,.16);border-radius:50px;padding:9px 17px;color:rgba(15,23,42,.7);font-size:12px;cursor:pointer;z-index:500;backdrop-filter:blur(10px);font-family:inherit;transition:all .25s;font-weight:600;}
+  .dm-toggle:hover{background:rgba(15,23,42,.14);color:#0f172a;}
+  body.dark .dm-toggle{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.14);color:rgba(255,255,255,.75);}
+  body.dark .dm-toggle:hover{background:rgba(255,255,255,.14);color:#fff;}
+
+  /* ── MARK FOR REVIEW ── */
+  .qbtn.review{border-color:#f59e0b!important;background:linear-gradient(135deg,#fef3c7,#fde68a);color:#92400e;}
+  .qbtn.review-answered{border-color:#f59e0b!important;background:linear-gradient(135deg,#d1fae5,#fde68a);color:#92400e;}
+  .btn-review{background:#fef3c7;color:#92400e;border:1.5px solid #fde68a;border-radius:var(--r-sm);padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;display:inline-flex;align-items:center;gap:5px;}
+  .btn-review:hover{background:#fde68a;transform:translateY(-1px);}
+  .btn-review.marked{background:linear-gradient(135deg,#f59e0b,#fbbf24);color:#fff;border-color:#f59e0b;box-shadow:0 4px 14px rgba(245,158,11,.35);}
+
+  /* ── FULLSCREEN WARNING BANNER ── */
+  #fs-warn-banner{position:fixed;top:0;left:0;right:0;z-index:9996;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;text-align:center;padding:11px 20px;font-size:13px;font-weight:600;animation:slideDown .3s var(--ease);box-shadow:0 4px 20px rgba(239,68,68,.5);}
+
+  /* ── NETWORK STATUS BANNER ── */
+  #net-status-banner{position:fixed;top:0;left:0;right:0;z-index:9997;text-align:center;padding:9px 16px;font-size:12.5px;font-weight:700;letter-spacing:.2px;transform:translateY(-100%);transition:transform .3s var(--ease);display:flex;align-items:center;justify-content:center;gap:8px;}
+  #net-status-banner.show{transform:translateY(0);}
+  #net-status-banner.offline{background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;box-shadow:0 4px 18px rgba(239,68,68,.4);}
+  #net-status-banner.syncing{background:linear-gradient(135deg,#06b6d4,#6d5dfc);color:#fff;box-shadow:0 4px 18px rgba(109,93,252,.4);}
+  #net-status-banner.online{background:linear-gradient(135deg,#22d3a8,#10b981);color:#fff;box-shadow:0 4px 18px rgba(16,185,129,.4);}
+  #net-status-banner .ns-dot{width:8px;height:8px;border-radius:50%;background:#fff;flex-shrink:0;}
+  #net-status-banner.offline .ns-dot{animation:nsPulse 1.4s ease-in-out infinite;}
+  #net-status-banner.syncing .ns-dot{animation:nsSpin 1s linear infinite;border-radius:2px;}
+  @keyframes nsPulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+  @keyframes nsSpin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+  @keyframes slideDown{from{transform:translateY(-100%);}to{transform:translateY(0);}}
+
+  /* ── SEARCH BOX ── */
+  .search-wrap{position:relative;margin-bottom:14px;}
+  .search-wrap::before{content:'🔍';position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:13px;}
+  .search-box{width:100%;padding:10px 14px 10px 36px;border:1.5px solid rgba(15,23,42,.12);border-radius:var(--r-sm);font-size:13px;outline:none;font-family:inherit;color:var(--ink);background:#fff;transition:border-color .2s,box-shadow .2s;}
+  .search-box:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(109,93,252,.13);}
+
+  /* ── EXAM ACCESS CODE ── */
+  #code-modal-bg{position:fixed;inset:0;background:rgba(6,7,13,.7);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;z-index:998;padding:20px;animation:fadeBg .25s;}
+  #code-modal-card{background:#fff;border-radius:var(--r-lg);box-shadow:0 30px 70px -10px rgba(0,0,0,.45);padding:28px;max-width:340px;width:100%;animation:modalIn .3s var(--ease);}
+
+  /* ── NO SELECT during exam ── */
+  #sc-take-exam{-webkit-user-select:none;user-select:none;}
+
+  /* ── DARK MODE ── */
+  body.dark .card{background:#1a2035;border-color:rgba(255,255,255,.07);}
+  body.dark .finput{background:#111827;color:#e2e8f0;border-color:rgba(255,255,255,.1);}
+  body.dark .finput:focus{border-color:var(--primary);}
+  body.dark .flabel{color:#94a3b8;}
+  body.dark th{background:rgba(255,255,255,.04);color:#94a3b8;}
+  body.dark td{color:#e2e8f0;}
+  body.dark .exam-hdr{background:rgba(15,22,40,.96);}
+  body.dark #sc-admin-dash, body.dark #sc-questions, body.dark #sc-results, body.dark #sc-create-exam, body.dark #sc-exam-list, body.dark #sc-take-exam{background:#070914;}
+  body.dark #sc-exam-result{background:radial-gradient(circle at 15% 10%,rgba(109,93,252,.25),transparent 50%),radial-gradient(circle at 90% 85%,rgba(6,182,212,.2),transparent 50%),linear-gradient(160deg,#070914,#0b1024)!important;}
+  body.dark .search-box{background:#111827;color:#e2e8f0;border-color:rgba(255,255,255,.1);}
+  body.dark .btn.ghost{background:rgba(255,255,255,.07);color:#e2e8f0;}
+  body.dark .exam-item{background:#1a2035;border-color:rgba(255,255,255,.07);}
+  body.dark .sexam-card{background:#1a2035;border-color:rgba(255,255,255,.07);}
+  body.dark h2,body.dark h3{color:#e2e8f0!important;}
+  body.dark .qa-item{border-color:rgba(255,255,255,.06);}
+  /* Bug fix: #q-text and option-label text were hardcoded to dark navy/black
+     inline colors in JS, which is invisible on the dark-mode card background
+     (#1a2035). These overrides force light, high-contrast text in dark mode
+     regardless of the inline color set by renderQuestion(). */
+  body.dark .q-text-dark{color:#f8fafc!important;}
+  body.dark .qa-item p{color:#e2e8f0!important;}
+  body.dark .modal-card{background:#1a2035;}
+  body.dark #code-modal-card{background:#1a2035;}
+  body.dark #modal-title{color:#e2e8f0;}
+  body.dark #modal-msg{color:#94a3b8;}
+
+  /* ── KATEX inside exam options ── */
+  .opt-btn .katex-display{display:inline-block;margin:0;text-align:left;}
+  .opt-btn .katex{font-size:1em;}
+  #q-text .katex-display{margin:.3em 0;}
+  #r-breakdown .katex{font-size:.95em;}
+
+  /* ── PRINT (result card only) ── */
+  @media print{
+    .dm-toggle, #toast-container, #loading-overlay, .btn, #net-status-banner, #fs-warn-banner{display:none!important;}
+    #sc-exam-result{background:#fff!important;}
+    #sc-exam-result .card{box-shadow:none!important;border:1px solid #ddd!important;}
+    body{background:#fff!important;}
+  }
+</style>
+<!-- Google Sign-In (Identity Services) -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+
+<!-- HOME -->
+<div id="sc-home" class="screen home">
+  <div class="home-icon">📚</div>
+  <h1>Shoheb's Exam Portal</h1>
+  <p>Online MCQ Exam Management System</p>
+  <div class="home-cards">
+    <button class="hcard student" onclick="goStudent()">
+      <div class="hcard-icon">🎓</div>
+      <h2>Student</h2>
+      <span>পরীক্ষা দিতে ক্লিক করুন</span>
+    </button>
+    <button class="hcard admin" onclick="showScreen('sc-admin-login')">
+      <div class="hcard-icon">⚙️</div>
+      <h2>Admin</h2>
+      <span>পরীক্ষা পরিচালনা করতে</span>
+    </button>
+  </div>
+  <button class="btn ghost sm" style="margin-top:22px;background:rgba(15,23,42,.08);color:rgba(15,23,42,.75);border:1px solid rgba(15,23,42,.12)" onclick="showScreen('sc-my-results')">📄 আমার ফলাফল দেখুন</button>
+</div>
+<button class="dm-toggle" id="dm-toggle" onclick="toggleDarkMode()">🌙 Dark Mode</button>
+
+<!-- ADMIN LOGIN -->
+<div id="sc-admin-login" class="screen hide login-wrap">
+  <div class="card" style="max-width:400px;width:100%">
+    <button class="btn ghost" onclick="showScreen('sc-home')" style="margin-bottom:20px">← ফিরে যান</button>
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="font-size:50px">🔐</div>
+      <h2 style="margin:8px 0 4px;color:#0f172a">Admin Login</h2>
+    </div>
+    <div class="fgroup">
+      <label class="flabel">পাসওয়ার্ড</label>
+      <input id="pw-input" type="password" class="finput" placeholder="পাসওয়ার্ড দিন" onkeydown="if(event.key==='Enter')adminLogin()"/>
+    </div>
+    <div id="pw-err" style="color:#ef4444;font-size:12px;margin-bottom:10px;display:none">❌ ভুল পাসওয়ার্ড!</div>
+    <button class="btn blue full" onclick="adminLogin()">প্রবেশ করুন →</button>
+  </div>
+</div>
+
+<!-- ADMIN DASHBOARD -->
+<div id="sc-admin-dash" class="screen hide">
+  <div class="hdr">
+    <div class="hdr-row">
+      <div>
+        <h1>⚙️ Admin Dashboard</h1>
+        <p>পরীক্ষা পরিচালনা করুন</p>
+      </div>
+      <button class="btn ghost sm" onclick="adminLogout()">Logout</button>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="stats" id="dash-stats"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+      <h2 style="font-size:16px;color:#0f172a">পরীক্ষার তালিকা</h2>
+      <div style="display:flex;gap:8px">
+        <button class="btn purple" onclick="showLeaderboard()">🏆 সার্বিক লিডারবোর্ড</button>
+        <button class="btn blue" onclick="showCreateExam()">+ নতুন পরীক্ষা</button>
+      </div>
+    </div>
+    <div id="exam-list-admin"></div>
+  </div>
+</div>
+
+<!-- CREATE EXAM -->
+<div id="sc-create-exam" class="screen hide">
+  <div class="hdr">
+    <button class="hdr-back" onclick="showAdminDash()">← ফিরে যান</button>
+    <h1 id="ce-heading">➕ নতুন পরীক্ষা তৈরি</h1>
+  </div>
+  <div class="wrap" style="max-width:560px">
+    <div class="card">
+      <div class="fgroup"><label class="flabel">পরীক্ষার নাম *</label><input id="ce-name" class="finput" placeholder="যেমন: বাংলা ১ম পত্র মডেল টেস্ট"/></div>
+      <div class="fgroup"><label class="flabel">বিষয় *</label><input id="ce-subject" class="finput" placeholder="যেমন: বাংলা, গণিত, বিজ্ঞান"/></div>
+      <div class="fgroup"><label class="flabel">সময়সীমা (মিনিট) *</label><input id="ce-duration" type="number" class="finput" value="10" min="1" max="180" style="width:130px"/></div>
+      <div class="fgroup"><label class="flabel">অ্যাক্সেস কোড <span style="color:#94a3b8;font-weight:400">(ঐচ্ছিক — ছাত্রকে এই কোড দিতে হবে)</span></label><input id="ce-code" class="finput" placeholder="যেমন: EXAM2025" style="width:200px;letter-spacing:2px;text-transform:uppercase"/></div>
+      <div class="fgroup" style="display:flex;gap:14px;flex-wrap:wrap">
+        <div style="flex:1;min-width:170px"><label class="flabel">শুরুর সময় <span style="color:#94a3b8;font-weight:400">(ঐচ্ছিক)</span></label><input id="ce-start" type="datetime-local" class="finput"/></div>
+        <div style="flex:1;min-width:170px"><label class="flabel">শেষ সময় <span style="color:#94a3b8;font-weight:400">(ঐচ্ছিক)</span></label><input id="ce-end" type="datetime-local" class="finput"/></div>
+      </div>
+      <div class="fgroup" style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);border-radius:var(--r-sm);padding:12px 14px">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:600;font-size:13px;color:var(--ink-soft)">
+          <input id="ce-negative" type="checkbox" onchange="document.getElementById('ce-negative-wrap').classList.toggle('hide',!this.checked)"/>
+          নেগেটিভ মার্কিং চালু করুন
+        </label>
+        <div id="ce-negative-wrap" class="hide" style="margin-top:10px">
+          <label class="flabel">প্রতি ভুল উত্তরে কাটা হবে (নম্বর)</label>
+          <input id="ce-negative-value" type="number" step="0.05" min="0" class="finput" value="0.25" style="width:130px"/>
+        </div>
+      </div>
+      <button class="btn green full" id="ce-submit-btn" onclick="createExam()">পরীক্ষা তৈরি করুন →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD QUESTIONS -->
+<div id="sc-questions" class="screen hide">
+  <div class="hdr">
+    <button class="hdr-back" onclick="showAdminDash()">← ফিরে যান</button>
+    <h1 id="aq-title">❓ প্রশ্ন যোগ করুন</h1>
+    <p id="aq-count">০টি প্রশ্ন</p>
+  </div>
+  <div class="wrap" style="max-width:800px">
+    <div class="card" style="margin-bottom:18px">
+      <h3 id="aq-form-title" style="font-size:15px;color:#0f172a;margin-bottom:14px">➕ নতুন প্রশ্ন যোগ</h3>
+      <div class="fgroup">
+        <label class="flabel">প্রশ্ন *</label>
+        <textarea id="aq-text" class="finput" rows="3" placeholder="প্রশ্নটি লিখুন..."></textarea>
+      </div>
+      <label class="flabel">অপশন (সঠিক উত্তরের বাম পাশের বোতামে ক্লিক করুন)</label>
+      <div class="opts-grid" style="margin-top:8px">
+        <div class="opt-row"><button id="opt-key-0" class="opt-key" onclick="setCorrect(0)">ক</button><input id="opt-0" class="finput" placeholder="অপশন ক"/></div>
+        <div class="opt-row"><button id="opt-key-1" class="opt-key" onclick="setCorrect(1)">খ</button><input id="opt-1" class="finput" placeholder="অপশন খ"/></div>
+        <div class="opt-row"><button id="opt-key-2" class="opt-key" onclick="setCorrect(2)">গ</button><input id="opt-2" class="finput" placeholder="অপশন গ"/></div>
+        <div class="opt-row"><button id="opt-key-3" class="opt-key" onclick="setCorrect(3)">ঘ</button><input id="opt-3" class="finput" placeholder="অপশন ঘ"/></div>
+      </div>
+      <p id="correct-label" style="font-size:12px;color:#10b981;margin-bottom:8px">✅ সঠিক উত্তর: ক</p>
+      <div class="fgroup" style="margin-bottom:12px"><label class="flabel">নম্বর (Marks)</label><input id="aq-marks" type="number" min="0.5" step="0.5" class="finput" value="1" style="width:110px"/></div>
+      <div class="fgroup">
+        <label class="flabel">ছবি/ডায়াগ্রাম (ঐচ্ছিক)</label>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <input id="aq-image-url" class="finput" placeholder="ছবির URL দিন..." style="flex:1;min-width:200px" oninput="onQImageUrlInput(this.value)"/>
+          <input id="aq-image-file" type="file" accept="image/*" onchange="handleQImageUpload(event)" style="display:none"/>
+          <button class="btn ghost sm" onclick="document.getElementById('aq-image-file').click()">📁 আপলোড</button>
+          <button id="aq-image-clear" class="btn red sm hide" onclick="clearQImage()">✕ মুছুন</button>
+        </div>
+        <p style="font-size:11px;color:#94a3b8;margin-top:5px">আপলোড করলে ছবি ৬০০KB-র কম হতে হবে (ছোট/কমপ্রেসড ছবি দিন)</p>
+        <img id="aq-image-preview" class="hide" style="max-width:220px;max-height:140px;border-radius:10px;margin-top:8px;border:1px solid rgba(15,23,42,.12);display:block"/>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn blue" onclick="addQuestion()">+ যোগ করুন</button>
+        <button id="aq-cancel" class="btn ghost hide" onclick="cancelEditQ()">বাতিল</button>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:18px">
+      <h3 style="font-size:15px;color:#0f172a;margin-bottom:10px">📋 বাল্ক ইম্পোর্ট (একসাথে অনেক প্রশ্ন)</h3>
+      <p style="font-size:12px;color:#64748b;margin-bottom:10px">প্রতি লাইনে একটি প্রশ্ন, এই ফরম্যাটে: <code>প্রশ্ন | অপশন১ | অপশন২ | অপশন৩ | অপশন৪ | সঠিক(ক/খ/গ/ঘ)</code></p>
+      <textarea id="bulk-import-text" class="finput" rows="5" placeholder="বাংলাদেশের রাজধানী কোনটি? | চট্টগ্রাম | ঢাকা | সিলেট | রাজশাহী | খ"></textarea>
+      <button class="btn purple" style="margin-top:10px" onclick="bulkImportQuestions()">📋 ইম্পোর্ট করুন</button>
+    </div>
+    <div id="q-list-wrap"></div>
+    <button class="btn green full" style="font-size:15px;padding:14px" onclick="saveQuestions()">✅ সংরক্ষণ করুন</button>
+  </div>
+</div>
+
+<!-- VIEW RESULTS -->
+<div id="sc-results" class="screen hide">
+  <div class="hdr">
+    <button class="hdr-back" onclick="showAdminDash()">← ফিরে যান</button>
+    <div class="hdr-row">
+      <div>
+        <h1 id="res-title">📊 ফলাফল</h1>
+        <p id="res-subtitle"></p>
+      </div>
+      <button class="btn green sm" onclick="exportResultsCSV()">📥 CSV Export</button>
+    </div>
+  </div>
+  <div class="wrap">
+    <div class="search-wrap"><input class="search-box" id="result-search" placeholder="ছাত্রের নাম দিয়ে খুঁজুন..." oninput="filterResults(this.value)"/></div>
+    <div id="q-analytics-wrap" style="margin-bottom:16px"></div>
+    <div id="results-table-wrap"></div>
+  </div>
+</div>
+
+<!-- OVERALL LEADERBOARD -->
+<div id="sc-leaderboard" class="screen hide">
+  <div class="hdr">
+    <button class="hdr-back" onclick="showAdminDash()">← ফিরে যান</button>
+    <h1>🏆 সার্বিক লিডারবোর্ড</h1>
+    <p>সব পরীক্ষা মিলিয়ে ছাত্রদের গড় পারফরম্যান্স</p>
+  </div>
+  <div class="wrap"><div id="leaderboard-table-wrap"></div></div>
+</div>
+
+<!-- STUDENT NAME / GOOGLE SIGN-IN -->
+<div id="sc-student-name" class="screen hide login-wrap">
+  <div class="card" style="max-width:420px;width:100%">
+    <button class="btn ghost" onclick="showScreen('sc-home')" style="margin-bottom:20px">← ফিরে যান</button>
+    <div style="text-align:center;margin-bottom:22px">
+      <div style="font-size:54px">🎓</div>
+      <h2 style="margin:8px 0 4px;color:#0f172a">পরীক্ষার্থী লগইন</h2>
+      <p style="color:#64748b;font-size:14px">পরীক্ষা দিতে আপনার Google অ্যাকাউন্ট দিয়ে সাইন ইন করুন</p>
+    </div>
+    <div id="g-signin-btn-wrap" style="display:flex;justify-content:center;min-height:44px"></div>
+    <div id="g-signin-err" class="hide" style="color:#ef4444;font-size:12px;text-align:center;margin-top:10px"></div>
+    <div id="g-signin-profile" class="hide" style="text-align:center">
+      <img id="g-signin-pic" style="width:64px;height:64px;border-radius:50%;margin-bottom:10px;border:2px solid #6d5dfc;object-fit:cover"/>
+      <p style="font-weight:700;color:#0f172a;font-size:15px" id="g-signin-name"></p>
+      <p style="font-size:12px;color:#64748b;margin-bottom:18px" id="g-signin-email"></p>
+      <button class="btn blue full" onclick="continueAfterGoogleSignIn()">পরীক্ষার তালিকা দেখুন →</button>
+      <button class="btn ghost full" style="margin-top:8px" onclick="googleSignOutStudent()">↺ অন্য অ্যাকাউন্টে সাইন ইন করুন</button>
+    </div>
+    <p style="font-size:11px;color:#94a3b8;text-align:center;margin-top:16px">🔒 প্রতারণা রোধে এক Google অ্যাকাউন্ট দিয়ে প্রতিটি পরীক্ষা একবারই দেওয়া যাবে</p>
+  </div>
+</div>
+
+<!-- MY RESULTS (student self-lookup) -->
+<div id="sc-my-results" class="screen hide login-wrap">
+  <div class="card" style="max-width:480px;width:100%">
+    <button class="btn ghost" onclick="showScreen('sc-home')" style="margin-bottom:20px">← ফিরে যান</button>
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="font-size:54px">📄</div>
+      <h2 style="margin:8px 0 4px;color:#0f172a">আমার ফলাফল</h2>
+      <p style="color:#64748b;font-size:14px">নাম দিয়ে আগের সব পরীক্ষার ফলাফল দেখুন</p>
+    </div>
+    <div class="fgroup"><input id="mr-name" class="finput" placeholder="আপনার নাম লিখুন..." onkeydown="if(event.key==='Enter')lookupMyResults()"/></div>
+    <button class="btn blue full" onclick="lookupMyResults()">ফলাফল দেখুন →</button>
+    <div id="mr-list" style="margin-top:18px"></div>
+  </div>
+</div>
+
+<!-- EXAM LIST -->
+<div id="sc-exam-list" class="screen hide">
+  <div class="hdr">
+    <button class="hdr-back" onclick="showScreen('sc-student-name')">← ফিরে যান</button>
+    <h1 id="elist-title">🎓 স্বাগতম!</h1>
+    <p>পরীক্ষা বেছে নিন</p>
+  </div>
+  <div class="wrap" style="max-width:700px">
+    <div id="student-exam-list"></div>
+  </div>
+</div>
+
+<!-- TAKE EXAM -->
+<div id="sc-take-exam" class="screen hide">
+  <div class="exam-hdr">
+    <div class="exam-hdr-inner">
+      <div style="flex:1">
+        <div id="te-name" style="font-size:13px;font-weight:600;color:#374151"></div>
+        <div id="te-progress-txt" style="font-size:11px;color:#64748b"></div>
+      </div>
+      <div id="timer-box" class="timer-box" style="border-color:#e2e8f0;background:#f8faff">
+        <div id="timer-val" class="tv" style="color:#0f172a">00:00</div>
+        <div class="tl">বাকি সময়</div>
+      </div>
+    </div>
+    <div class="pbar-wrap"><div id="progress-bar" class="pbar" style="width:0%"></div></div>
+  </div>
+  <div class="wrap" style="max-width:700px">
+    <div id="qnav" class="qnav"></div>
+    <div class="card" style="margin-bottom:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+        <span id="q-badge" style="background:#eff6ff;color:#3b82f6;border-radius:8px;padding:4px 12px;font-size:12px;font-weight:700"></span>
+        <button id="btn-review" class="btn-review" onclick="toggleReview()">⚑ রিভিউ করব</button>
+      </div>
+      <div id="q-image-wrap" class="hide"></div>
+      <p id="q-text" class="q-text-dark" style="font-size:17px;font-weight:700;color:#000;margin:0 0 18px;line-height:1.6"></p>
+      <div id="q-options"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="display:flex;gap:8px">
+        <button id="btn-prev" class="btn ghost hide" onclick="goPrev()">← আগের</button>
+        <button id="btn-next" class="btn blue hide" onclick="goNext()">পরের →</button>
+      </div>
+      <button class="btn green" onclick="showSubmitModal()">✅ জমা দিন</button>
+    </div>
+  </div>
+</div>
+
+<!-- EXAM RESULT -->
+<div id="sc-exam-result" class="screen hide" style="padding:24px 20px 48px;background:radial-gradient(circle at 15% 10%,rgba(109,93,252,.1),transparent 50%),radial-gradient(circle at 90% 85%,rgba(6,182,212,.08),transparent 50%),linear-gradient(160deg,#eef2ff,#f0f9ff);min-height:100vh">
+  <div style="max-width:600px;margin:0 auto">
+    <div class="card" style="text-align:center;padding:30px 24px;margin-bottom:14px">
+      <div id="r-emoji" style="font-size:56px"></div>
+      <h2 id="r-name" style="margin:8px 0 2px;font-size:21px;color:#0f172a"></h2>
+      <p id="r-exam-name" style="color:#64748b;font-size:13px;margin:0 0 20px"></p>
+      <div class="result-stats" id="r-stats"></div>
+      <div id="r-verdict" style="border-radius:10px;padding:10px 18px;margin-bottom:14px"></div>
+      <div style="height:10px;background:#e2e8f0;border-radius:5px;overflow:hidden;margin-bottom:4px">
+        <div id="r-bar" style="height:100%;border-radius:5px;transition:width 1s ease;width:0%"></div>
+      </div>
+      <div id="r-pct-label" style="font-size:11px;color:#64748b;text-align:right"></div>
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <h3 style="font-size:15px;color:#0f172a;margin:0 0 14px">প্রতিটি প্রশ্নের বিশ্লেষণ</h3>
+      <div id="r-breakdown"></div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button class="btn ghost" style="width:100%;justify-content:center" onclick="window.print()">🖨️ প্রিন্ট / PDF</button>
+      <button class="btn dark" style="width:100%;justify-content:center" onclick="goHome()">🏠 হোমে ফিরে যান</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div id="modal" class="modal-bg hide">
+  <div class="modal-card">
+    <div id="modal-icon" style="font-size:32px;margin-bottom:8px">⚠️</div>
+    <h3 id="modal-title" style="color:#0f172a;margin-bottom:8px"></h3>
+    <p id="modal-msg" style="color:#64748b;font-size:13px;margin-bottom:20px"></p>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button id="modal-cancel" class="btn ghost" onclick="closeModal()">বাতিল</button>
+      <button id="modal-ok" class="btn green">নিশ্চিত</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ADMIN_EMAIL='admin@shoheb.com';
+const LABELS = ['ক','খ','গ','ঘ'];
+// Bug fix: centralized pass mark — change this one value to update everywhere
+const PASS_MARK = 23; // percent
+
+// ── GOOGLE SIGN-IN CONFIG ──
+// নিচে আপনার নিজের Google OAuth Client ID বসান (Google Cloud Console থেকে নিতে হবে)।
+// সেটআপ গাইড ছাড়া এটা কাজ করবে না — যতক্ষণ এখানে সঠিক Client ID না বসাবেন, ততক্ষণ
+// Student স্ক্রিনে "⚠️ Google Sign-In এখনো সেটআপ করা হয়নি" দেখাবে।
+const GOOGLE_CLIENT_ID = "493895689529-r7et1t64m5208kl36imdbdh8e0112jhb.apps.googleusercontent.com";
+// (ঐচ্ছিক) যদি শুধুমাত্র একটি নির্দিষ্ট স্কুল/প্রতিষ্ঠানের ইমেইল ডোমেইন দিয়েই সাইন-ইন করতে দিতে
+// চান (যেমন @yourschool.edu.bd), নিচে লিখুন। যেকোনো Gmail চলতে দিতে চাইলে '' রেখে দিন।
+const GOOGLE_RESTRICT_DOMAIN = "";
+
+// ── DEVICE FINGERPRINT ──
+// একটি browser-এর unique ID তৈরি করে localStorage-এ রাখে।
+// নাম বদলালেও একই device ধরা পড়বে।
+function getDeviceId(){
+  let id = localStorage.getItem('_devId');
+  if(id) return id;
+  // Browser properties থেকে fingerprint তৈরি
+  const raw = [
+    navigator.userAgent,
+    navigator.language || '',
+    (navigator.languages||[]).join(','),
+    screen.width+'x'+screen.height,
+    screen.colorDepth,
+    new Date().getTimezoneOffset(),
+    navigator.hardwareConcurrency||'',
+    navigator.platform||'',
+    !!navigator.cookieEnabled,
+    !!window.indexedDB,
+    !!window.localStorage,
+  ].join('||');
+  // Canvas fingerprint (অনেক বেশি unique)
+  try{
+    const c=document.createElement('canvas');
+    const ctx=c.getContext('2d');
+    ctx.textBaseline='top';
+    ctx.font='14px Arial';
+    ctx.fillStyle='#f00';
+    ctx.fillText('shoheb🔑exam2025',2,2);
+    ctx.fillStyle='rgba(0,255,0,.5)';
+    ctx.fillRect(10,10,50,20);
+    raw.concat(c.toDataURL());
+  }catch(e){}
+  // Simple hash
+  let h=0;
+  for(let i=0;i<raw.length;i++){h=Math.imul(31,h)+raw.charCodeAt(i)|0;}
+  id='dev_'+Math.abs(h).toString(36)+'_'+Math.random().toString(36).slice(2,9);
+  localStorage.setItem('_devId',id);
+  return id;
+}
+
+const FIREBASE_EXAMS_URL = "https://shoheb-exam-portal-default-rtdb.firebaseio.com/exams";
+const FIREBASE_RESULTS_URL = "https://shoheb-exam-portal-default-rtdb.firebaseio.com/results";
+
+// ── GOOGLE SIGN-IN (STUDENT IDENTITY) ──
+// Student-রা এখন নাম টাইপ করে না — Google অ্যাকাউন্ট দিয়ে সাইন ইন করে।
+// এতে একজন ছাত্র একাধিক নাম ব্যবহার করে বারবার পরীক্ষা দিতে পারবে না, কারণ
+// duplicate-check এখন আসল Google ইমেইল (Firebase-এ shared, সব device-এ একই) ধরে হয়।
+let googleStudentProfile = null; // {email, name, picture, sub}
+
+function googleSignInReady(){
+  return !!(window.google && google.accounts && GOOGLE_CLIENT_ID && GOOGLE_CLIENT_ID.indexOf('PASTE_YOUR')!==0);
+}
+
+function initGoogleSignIn(){
+  if(!googleSignInReady()) return;
+  try{
+    google.accounts.id.initialize({
+      client_id: GOOGLE_CLIENT_ID,
+      callback: handleGoogleCredentialResponse,
+      ux_mode: 'popup',
+      auto_select: false
+    });
+  }catch(e){ console.error(e); }
+}
+
+async function handleGoogleCredentialResponse(resp){
+  const errEl = document.getElementById('g-signin-err');
+  errEl.classList.add('hide');
+  showLoading('সাইন ইন যাচাই করা হচ্ছে...');
+  // Google-এর ID token দিয়ে আসলেই Firebase Auth-এ সাইন-ইন করি — এতে
+  // signature server-side যাচাই হয়, শুধু client-side decode-এর উপর ভরসা করা হয় না।
+  const user = window.firebaseSignInWithGoogleIdToken
+    ? await window.firebaseSignInWithGoogleIdToken(resp.credential)
+    : null;
+  hideLoading();
+  if(!user || !user.email){
+    // Bug fix: give a specific reason instead of one generic message for
+    // every possible failure — this is the actual cause of "সাইন ইন যাচাই
+    // করা যায়নি" showing up even when the real problem is something fixable
+    // on the Firebase Console side (most common culprits below).
+    const lastErr = window._lastGoogleSignInError;
+    const code = lastErr && lastErr.code;
+    let msg = '⚠️ সাইন ইন যাচাই করা যায়নি, আবার চেষ্টা করুন।';
+    if(code==='auth/operation-not-allowed'){
+      msg = '⚠️ Firebase Console-এ Google Sign-In provider enable করা নেই। Authentication → Sign-in method → Google চালু করুন।';
+    } else if(code==='auth/unauthorized-domain'){
+      msg = '⚠️ এই domain Firebase-এ অনুমোদিত নয়। Authentication → Settings → Authorized domains-এ এই সাইটের domain যুক্ত করুন।';
+    } else if(code==='auth/invalid-credential'){
+      msg = '⚠️ Google OAuth client ভুল/অমিল। Firebase Console-এর Google provider-এ ব্যবহৃত Web client ID আর কোডের GOOGLE_CLIENT_ID এক হতে হবে।';
+    } else if(code==='auth/web-storage-unsupported' || code==='auth/popup-blocked'){
+      msg = '⚠️ ব্রাউজার থার্ড-পার্টি কুকি/পপআপ ব্লক করছে (Brave Shields, privacy mode ইত্যাদি)। Shields বন্ধ করুন বা Chrome/Edge দিয়ে চেষ্টা করুন।';
+    } else if(code==='auth/network-request-failed'){
+      msg = '⚠️ নেটওয়ার্ক সমস্যার কারণে সাইন-ইন যাচাই করা যায়নি। সংযোগ চেক করে আবার চেষ্টা করুন।';
+    } else if(code){
+      msg = '⚠️ সাইন ইন ব্যর্থ ('+code+')। আবার চেষ্টা করুন। সমস্যা থাকলে Brave Shields/ad-blocker বন্ধ করে দেখুন।';
+    } else {
+      msg = '⚠️ সাইন ইন যাচাই করা যায়নি। Brave Shields বা কোনো ad-blocker চালু থাকলে বন্ধ করে আবার চেষ্টা করুন, অথবা Chrome ব্যবহার করুন।';
+    }
+    errEl.textContent = msg;
+    errEl.classList.remove('hide');
+    return;
+  }
+  if(GOOGLE_RESTRICT_DOMAIN && user.email.toLowerCase().split('@')[1]!==GOOGLE_RESTRICT_DOMAIN.toLowerCase()){
+    errEl.textContent = '⚠️ শুধুমাত্র @'+GOOGLE_RESTRICT_DOMAIN+' ইমেইল দিয়ে সাইন ইন করা যাবে।';
+    errEl.classList.remove('hide');
+    googleSignOutStudent();
+    return;
+  }
+  googleStudentProfile = { email: user.email.toLowerCase(), name: user.displayName || user.email, picture: user.photoURL || '', sub: user.uid };
+  document.getElementById('g-signin-btn-wrap').classList.add('hide');
+  document.getElementById('g-signin-profile').classList.remove('hide');
+  document.getElementById('g-signin-pic').src = googleStudentProfile.picture;
+  document.getElementById('g-signin-name').textContent = googleStudentProfile.name;
+  document.getElementById('g-signin-email').textContent = googleStudentProfile.email;
+}
+
+function renderGoogleButton(){
+  const wrap=document.getElementById('g-signin-btn-wrap');
+  if(!wrap) return;
+  document.getElementById('g-signin-profile').classList.add('hide');
+  document.getElementById('g-signin-err').classList.add('hide');
+  wrap.classList.remove('hide');
+  wrap.innerHTML='';
+  if(!googleSignInReady()){
+    wrap.innerHTML = '<p style="color:#ef4444;font-size:12px;text-align:center;line-height:1.6">⚠️ Google Sign-In এখনো সেটআপ করা হয়নি।<br>কোডে GOOGLE_CLIENT_ID বসান।</p>';
+    return;
+  }
+  try{ google.accounts.id.renderButton(wrap, { theme:'outline', size:'large', text:'signin_with', shape:'pill', width:280 }); }
+  catch(e){ console.error(e); }
+}
+
+function googleSignOutStudent(){
+  googleStudentProfile = null;
+  try{ if(window.google && google.accounts) google.accounts.id.disableAutoSelect(); }catch(e){}
+  if(window.firebaseSignOutStudent) window.firebaseSignOutStudent();
+  renderGoogleButton();
+}
+
+function continueAfterGoogleSignIn(){
+  if(!googleStudentProfile){ toast('প্রথমে Google দিয়ে সাইন ইন করুন','warning'); return; }
+  studentName = googleStudentProfile.name;
+  document.getElementById('elist-title').textContent='🎓 স্বাগতম, '+studentName+'!';
+  renderStudentExamList();
+  showScreen('sc-exam-list');
+}
+
+let exams=[], results=[], studentName='';
+let currentExam=null, currentAnswers={}, currentQ=0, currentCorrect=0;
+let timerInterval=null, timeLeft=0, examDeadline=0, lowTimeBeeped=false;
+let editQIndex=null, tempQuestions=[], editingExamId=null, editingExamMetaId=null;
+let viewResultExamId=null, currentQImage=null;
+
+function onQImageUrlInput(v){
+  v=v.trim();
+  document.getElementById('aq-image-file').value='';
+  currentQImage=v||null;
+  if(v) showQImagePreview(v); else hideQImagePreview();
+}
+function handleQImageUpload(e){
+  const file=e.target.files[0];
+  if(!file) return;
+  if(!file.type.startsWith('image/')){ toast('ছবি ফাইল দিন','warning'); e.target.value=''; return; }
+  if(file.size>600*1024){ toast('ছবি ৬০০KB-র কম হতে হবে','warning'); e.target.value=''; return; }
+  const reader=new FileReader();
+  reader.onload=()=>{
+    currentQImage=reader.result;
+    document.getElementById('aq-image-url').value='';
+    showQImagePreview(currentQImage);
+  };
+  reader.readAsDataURL(file);
+}
+function showQImagePreview(src){
+  const img=document.getElementById('aq-image-preview');
+  img.src=src; img.classList.remove('hide');
+  document.getElementById('aq-image-clear').classList.remove('hide');
+}
+function hideQImagePreview(){
+  document.getElementById('aq-image-preview').classList.add('hide');
+  document.getElementById('aq-image-clear').classList.add('hide');
+}
+function clearQImage(){
+  currentQImage=null;
+  document.getElementById('aq-image-url').value='';
+  document.getElementById('aq-image-file').value='';
+  hideQImagePreview();
+}
+
+// ── IN-PROGRESS EXAM AUTOSAVE/RESUME ──
+function progressKey(examId,name){ return 'examProgress_'+examId+'_'+(name||'').trim().toLowerCase(); }
+function saveProgress(){
+  if(!currentExam) return;
+  try{
+    localStorage.setItem(progressKey(currentExam.id,studentName), JSON.stringify({
+      answers:currentAnswers, review:markedForReview, currentQ:currentQ,
+      deadline:examDeadline, questions:currentExam.questions
+    }));
+  }catch(e){}
+}
+function loadProgress(examId,name){
+  try{
+    const raw=localStorage.getItem(progressKey(examId,name));
+    return raw?JSON.parse(raw):null;
+  }catch(e){ return null; }
+}
+function clearProgress(examId,name){
+  try{ localStorage.removeItem(progressKey(examId,name)); }catch(e){}
+}
+
+async function fbAuthQuery(){
+  try{
+    if(typeof window.getFbIdToken==='function'){
+      const token=await window.getFbIdToken();
+      if(token) return '?auth='+token;
+    }
+  }catch(e){}
+  return '';
+}
+
+async function fbGet(url) {
+  try {
+    const res = await fetch(url + ".json" + await fbAuthQuery());
+    const data = await res.json();
+    if(!data || data.error) return [];
+    return Object.keys(data).map(key => ({ id: key, ...data[key] }));
+  } catch(e) { console.error(e); return []; }
+}
+
+async function fbSet(url, id, data) {
+  try {
+    const res = await fetch(`${url}/${id}.json${await fbAuthQuery()}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    const out = await res.json().catch(()=>null);
+    if(!res.ok || (out && out.error)){
+      console.error('fbSet failed:', res.status, out);
+      toast('⚠️ সংরক্ষণ ব্যর্থ হয়েছে — অনুমতি/লগইন সমস্যা (status '+res.status+')','error',6000);
+      return false;
+    }
+    return true;
+  } catch(e) {
+    console.error(e);
+    toast('⚠️ সংরক্ষণ ব্যর্থ হয়েছে — নেটওয়ার্ক সমস্যা','error',6000);
+    return false;
+  }
+}
+
+async function fbDelete(url, id) {
+  try {
+    const res = await fetch(`${url}/${id}.json${await fbAuthQuery()}`, { method: 'DELETE' });
+    if(!res.ok){
+      console.error('fbDelete failed:', res.status);
+      toast('⚠️ ডিলিট ব্যর্থ হয়েছে — অনুমতি/লগইন সমস্যা','error',6000);
+      return false;
+    }
+    return true;
+  } catch(e) { console.error(e); toast('⚠️ ডিলিট ব্যর্থ হয়েছে — নেটওয়ার্ক সমস্যা','error',6000); return false; }
+}
+
+async function syncAllData() {
+  showLoading();
+  try {
+    exams = await fbGet(FIREBASE_EXAMS_URL);
+    results = await fbGet(FIREBASE_RESULTS_URL);
+  } catch(e) {
+    toast('ডেটা লোড করতে সমস্যা হয়েছে', 'error');
+  } finally {
+    hideLoading();
+  }
+}
+
+// ── TOAST ──
+function toast(msg, type='info', duration=3200){
+  const c=document.getElementById('toast-container');
+  if(!c){ console.warn('toast() called before #toast-container existed:', msg); return; }
+  const t=document.createElement('div');
+  const icons={success:'✅',error:'❌',warning:'⚠️',info:'ℹ️'};
+  t.className='toast t-'+(type==='info'?'info':type);
+  t.innerHTML=`<span class="t-icon">${icons[type]||'ℹ️'}</span><span style="flex:1">${msg}</span><button class="t-close" onclick="this.parentElement.remove()">✕</button>`;
+  c.appendChild(t);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add('show')));
+  setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove&&t.remove(),380);},duration);
+}
+
+// ── LOADING ──
+function showLoading(msg='লোড হচ্ছে...'){
+  // Bug fix: these elements are declared near the end of <body>, after this
+  // script block. If showLoading() ever ran before the full page finished
+  // parsing (e.g. the very first init() call), getElementById returned null
+  // and threw — silently aborting syncAllData() before exams/results were
+  // even fetched. Null-checks here mean a timing issue can never crash the
+  // rest of init()/syncAllData() again.
+  const msgEl=document.getElementById('loading-msg');
+  const overlay=document.getElementById('loading-overlay');
+  if(msgEl) msgEl.textContent=msg;
+  if(overlay) overlay.classList.remove('hide');
+}
+function hideLoading(){
+  const overlay=document.getElementById('loading-overlay');
+  if(overlay) overlay.classList.add('hide');
+}
+
+// ── DARK MODE ──
+function toggleDarkMode(){
+  document.body.classList.toggle('dark');
+  const on=document.body.classList.contains('dark');
+  localStorage.setItem('darkMode',on?'1':'0');
+  document.getElementById('dm-toggle').textContent=on?'☀️ Light Mode':'🌙 Dark Mode';
+  // Bug fix: renderQuestion() bakes the current theme's colors directly into
+  // each option button's inline style. Without this, toggling dark mode
+  // mid-exam left the option cards showing the old theme's colors until the
+  // next click/navigation happened to call renderQuestion() again.
+  try{
+    if(typeof currentExam!=='undefined' && currentExam && typeof renderQuestion==='function' && !document.getElementById('sc-take-exam').classList.contains('hide')){
+      renderQuestion();
+    }
+  }catch(e){}
+}
+
+async function init(){
+  try{
+    // Default is LIGHT mode. Apply dark only if user explicitly chose it.
+    if(localStorage.getItem('darkMode')==='1'){
+      document.body.classList.add('dark');
+      document.getElementById('dm-toggle').textContent='☀️ Light Mode';
+    } else {
+      document.body.classList.remove('dark');
+      document.getElementById('dm-toggle').textContent='🌙 Dark Mode';
+    }
+    await syncAllData();
+    initGoogleSignIn();
+
+    if(exams.length === 0 && !localStorage.getItem('demoExamCreated')) {
+      // Bug fix: only create demo exam once, not every time exams list is empty
+      const demoId = "demo1";
+      const demoData = {
+        name:'সাধারণ জ্ঞান (Demo)',subject:'GK',duration:5,active:true,
+        createdAt:new Date().toISOString(),
+        questions:[
+          {id:"q1",text:'বাংলাদেশের রাজধানী কোনটি?',options:['চট্টগ্রাম','ঢাকা','সিলেট','রাজশাহী'],correct:1},
+          {id:"q2",text:'বাংলাদেশ কত সালে স্বাধীন হয়?',options:['১৯৬৯','১৯৭০','১৯৭১','১৯৭২'],correct:2}
+        ]
+      };
+      await fbSet(FIREBASE_EXAMS_URL, demoId, demoData);
+      exams = [{ id: demoId, ...demoData }];
+      localStorage.setItem('demoExamCreated','1');
+    }
+  }catch(e){
+    // Bug fix: init() previously had no try/catch, so any error here (e.g. a
+    // DOM element not ready yet) silently aborted startup and the home
+    // screen never got shown. Now we always log it and still show the home
+    // screen, so the app can never get stuck on a blank/loading page.
+    console.error('init() error:', e);
+  }
+  showScreen('sc-home');
+}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.add('hide'));
+  document.getElementById(id).classList.remove('hide');
+  window.scrollTo(0,0);
+}
+
+function goHome(){ clearTimer(); studentName=''; googleStudentProfile=null; if(window.firebaseSignOutStudent) window.firebaseSignOutStudent(); currentExam=null; currentAnswers={}; currentQ=0; markedForReview={}; showScreen('sc-home'); }
+
+// ── ADMIN ──
+async function adminLogin(){ window.firebaseAdminLogin&&window.firebaseAdminLogin(); }
+function adminLogout(){ if(window.firebaseAdminLogout){window.firebaseAdminLogout()} else showScreen('sc-home'); }
+
+function showAdminDash(){
+  renderDashStats(); renderExamListAdmin(); showScreen('sc-admin-dash');
+}
+
+function renderDashStats(){
+  const avgScore = results.length
+    ? (results.reduce((a,r)=>a+(r.score/r.total)*100,0)/results.length).toFixed(1)+'%'
+    : '—';
+  const passCount = results.filter(r=>(r.score/r.total)*100>=PASS_MARK).length;
+  const passRate = results.length ? ((passCount/results.length)*100).toFixed(0)+'%' : '—';
+  // Count suspicious duplicate devices
+  const devMap={};
+  results.forEach(r=>{ if(r.deviceId) devMap[r.deviceId]=(devMap[r.deviceId]||[]).concat(r.studentName); });
+  const dupDevices=Object.values(devMap).filter(names=>names.length>1).length;
+  document.getElementById('dash-stats').innerHTML=`
+    <div class="stat"><div class="si">📝</div><div class="sv" style="color:#3b82f6">${exams.length}</div><div class="sl">মোট পরীক্ষা</div></div>
+    <div class="stat"><div class="si">✅</div><div class="sv" style="color:#10b981">${exams.filter(e=>e.active).length}</div><div class="sl">সক্রিয়</div></div>
+    <div class="stat"><div class="si">📊</div><div class="sv" style="color:#f59e0b">${results.length}</div><div class="sl">মোট সাবমিশন</div></div>
+    <div class="stat"><div class="si">📈</div><div class="sv" style="color:#6d5dfc">${avgScore}</div><div class="sl">গড় নম্বর</div></div>
+    <div class="stat"><div class="si">🏆</div><div class="sv" style="color:#10b981">${passRate}</div><div class="sl">পাস রেট</div></div>
+    ${dupDevices?`<div class="stat" style="border:2px solid #fecaca;background:#fff5f5"><div class="si">⚠️</div><div class="sv" style="color:#dc2626">${dupDevices}</div><div class="sl">Duplicate Device</div></div>`:''}`;
+}
+
+function renderExamListAdmin(){
+  const el=document.getElementById('exam-list-admin');
+  if(!exams.length){ el.innerHTML='<div class="card" style="text-align:center;padding:40px;color:#94a3b8"><div style="font-size:48px">📭</div><p style="margin-top:8px">কোনো পরীক্ষা নেই। নতুন পরীক্ষা তৈরি করুন।</p></div>'; return; }
+  el.innerHTML=exams.map(ex=>{
+    const cnt=results.filter(r=>r.examId===ex.id).length;
+    const win=examWindowStatus(ex);
+    const winBadge=win==='upcoming'?'<span class="badge off">⏳ শীঘ্রই শুরু</span>':win==='ended'?'<span class="badge off">⌛ সময় শেষ</span>':'';
+    return `<div class="exam-item">
+      <div class="exam-meta">
+        <h3>${ex.name} <span class="badge ${ex.active?'active':'off'}">${ex.active?'সক্রিয়':'বন্ধ'}</span> ${winBadge}</h3>
+        <div class="tags"><span>📚 ${ex.subject}</span><span>⏱ ${ex.duration} মিনিট</span><span>❓ ${ex.questions ? ex.questions.length : 0}টি প্রশ্ন</span><span>📊 ${cnt}টি সাবমিশন</span>${ex.negativeMarking?`<span>➖ নেগেটিভ: ${ex.negativeValue}</span>`:''}</div>
+      </div>
+      <div class="exam-actions">
+        <button class="btn purple sm" onclick="showAddQ('${ex.id}')">❓ প্রশ্ন</button>
+        <button class="btn blue sm" onclick="showCreateExam('${ex.id}')">✏️ এডিট</button>
+        <button class="btn dark sm" onclick="cloneExam('${ex.id}')">📋 ক্লোন</button>
+        <button class="btn green sm" onclick="showResults('${ex.id}')">📊 ফলাফল</button>
+        <button class="btn ${ex.active?'amber':'green'} sm" onclick="toggleExam('${ex.id}')">${ex.active?'⏸ বন্ধ':'▶ চালু'}</button>
+        <button class="btn red sm" onclick="deleteExam('${ex.id}')">🗑️</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function toggleExam(id){ 
+  const ex = exams.find(e=>e.id===id);
+  if(ex) {
+    ex.active = !ex.active;
+    const { id: _, ...payload } = ex;
+    await fbSet(FIREBASE_EXAMS_URL, id, payload);
+    renderDashStats(); renderExamListAdmin(); 
+  }
+}
+
+function deleteExam(id){
+  showModal('⚠️','পরীক্ষা মুছুন','এই পরীক্ষা ও সব ডেটা মুছে যাবে।', async ()=>{
+    await fbDelete(FIREBASE_EXAMS_URL, id);
+    const associatedResults = results.filter(r => r.examId === id);
+    for(let r of associatedResults) {
+      await fbDelete(FIREBASE_RESULTS_URL, r.id);
+    }
+    await syncAllData();
+    renderDashStats(); renderExamListAdmin();
+  });
+}
+
+function showCreateExam(examId){
+  editingExamMetaId=examId||null;
+  const ex=examId?exams.find(e=>e.id===examId):null;
+  document.getElementById('ce-heading').textContent=ex?'✏️ পরীক্ষা এডিট':'➕ নতুন পরীক্ষা তৈরি';
+  document.getElementById('ce-submit-btn').textContent=ex?'পরিবর্তন সংরক্ষণ করুন →':'পরীক্ষা তৈরি করুন →';
+  document.getElementById('ce-name').value=ex?ex.name:'';
+  document.getElementById('ce-subject').value=ex?ex.subject:'';
+  document.getElementById('ce-duration').value=ex?ex.duration:10;
+  document.getElementById('ce-code').value=ex?(ex.code||''):'';
+  document.getElementById('ce-start').value=ex&&ex.startAt?toLocalInputValue(ex.startAt):'';
+  document.getElementById('ce-end').value=ex&&ex.endAt?toLocalInputValue(ex.endAt):'';
+  document.getElementById('ce-negative').checked=!!(ex&&ex.negativeMarking);
+  document.getElementById('ce-negative-wrap').classList.toggle('hide',!(ex&&ex.negativeMarking));
+  document.getElementById('ce-negative-value').value=ex&&ex.negativeValue!==undefined?ex.negativeValue:0.25;
+  showScreen('sc-create-exam');
+}
+function toLocalInputValue(iso){
+  const d=new Date(iso); const pad=n=>String(n).padStart(2,'0');
+  return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes());
+}
+
+async function createExam(){
+  const name=document.getElementById('ce-name').value.trim();
+  const subject=document.getElementById('ce-subject').value.trim();
+  const duration=+document.getElementById('ce-duration').value;
+  const code=document.getElementById('ce-code').value.trim().toUpperCase();
+  const startVal=document.getElementById('ce-start').value;
+  const endVal=document.getElementById('ce-end').value;
+  const negativeMarking=document.getElementById('ce-negative').checked;
+  const negativeValue=+document.getElementById('ce-negative-value').value||0;
+  if(!name||!subject||!duration){ toast('সব তথ্য পূরণ করুন','warning'); return; }
+
+  const extra={
+    ...(code?{code}:{}),
+    ...(startVal?{startAt:new Date(startVal).toISOString()}:{}),
+    ...(endVal?{endAt:new Date(endVal).toISOString()}:{}),
+    negativeMarking, negativeValue
+  };
+
+  if(editingExamMetaId){
+    const ex=exams.find(e=>e.id===editingExamMetaId);
+    const updated={...ex, name, subject, duration, ...extra};
+    if(!code) delete updated.code;
+    if(!startVal) delete updated.startAt;
+    if(!endVal) delete updated.endAt;
+    const {id:_, ...payload}=updated;
+    const ok=await fbSet(FIREBASE_EXAMS_URL, editingExamMetaId, payload);
+    await syncAllData();
+    if(ok) toast('"'+name+'" আপডেট হয়েছে','success');
+  } else {
+    const newId = "ex_" + Math.random().toString(36).slice(2, 10);
+    const newExamData = {name, subject, duration, active:true, createdAt:new Date().toISOString(), questions:[], ...extra};
+    const ok=await fbSet(FIREBASE_EXAMS_URL, newId, newExamData);
+    await syncAllData();
+    if(ok) toast('"'+name+'" পরীক্ষা তৈরি হয়েছে','success');
+  }
+  editingExamMetaId=null;
+  showAdminDash();
+}
+
+async function cloneExam(id){
+  const ex=exams.find(e=>e.id===id);
+  if(!ex) return;
+  const newId = "ex_" + Math.random().toString(36).slice(2, 10);
+  const {id:_, createdAt, ...rest} = ex;
+  const cloned = {...rest, name: ex.name+' (কপি)', active:false, createdAt:new Date().toISOString()};
+  const ok=await fbSet(FIREBASE_EXAMS_URL, newId, cloned);
+  await syncAllData();
+  renderDashStats(); renderExamListAdmin();
+  if(ok) toast('পরীক্ষা ক্লোন হয়েছে: "'+cloned.name+'"','success');
+}
+
+function showAddQ(examId){
+  editingExamId=examId;
+  const ex=exams.find(e=>e.id===examId);
+  tempQuestions=ex.questions ? ex.questions.map(q=>({...q,options:[...q.options]})) : [];
+  editQIndex=null; currentCorrect=0;
+  document.getElementById('aq-title').textContent='❓ প্রশ্ন যোগ: '+ex.name;
+  resetQForm(); renderQList(); showScreen('sc-questions');
+}
+
+function setCorrect(i){
+  currentCorrect=i;
+  [0,1,2,3].forEach(j=>{
+    const btn=document.getElementById('opt-key-'+j);
+    btn.style.borderColor=j===i?'#10b981':'#e2e8f0';
+    btn.style.background=j===i?'linear-gradient(135deg,#d1fae5,#a7f3d0)':'#fff';
+    btn.style.color=j===i?'#059669':'#94a3b8';
+    btn.style.boxShadow=j===i?'0 4px 14px rgba(16,185,129,.3)':'none';
+  });
+  document.getElementById('correct-label').textContent='✅ সঠিক উত্তর: '+LABELS[i];
+}
+
+function resetQForm(){
+  document.getElementById('aq-text').value='';
+  [0,1,2,3].forEach(i=>document.getElementById('opt-'+i).value='');
+  document.getElementById('aq-marks').value=1;
+  clearQImage();
+  editQIndex=null; currentCorrect=0; setCorrect(0);
+  document.getElementById('aq-form-title').textContent='➕ নতুন প্রশ্ন যোগ';
+  document.getElementById('aq-cancel').classList.add('hide');
+  document.getElementById('aq-count').textContent=tempQuestions.length+'টি প্রশ্ন';
+}
+
+function cancelEditQ(){ resetQForm(); renderQList(); }
+
+function addQuestion(){
+  const text=document.getElementById('aq-text').value.trim();
+  const opts=[0,1,2,3].map(i=>document.getElementById('opt-'+i).value.trim());
+  const marks=+document.getElementById('aq-marks').value||1;
+  if(!text||opts.some(o=>!o)){ toast('প্রশ্ন ও সব অপশন পূরণ করুন','warning'); return; }
+  const q={id:"q_"+Date.now().toString(36),text,options:opts,correct:currentCorrect,marks,...(currentQImage?{image:currentQImage}:{})};
+  if(editQIndex!==null){ tempQuestions[editQIndex]=q; toast('প্রশ্ন আপডেট হয়েছে','success'); }
+  else{ tempQuestions.push(q); toast('প্রশ্ন যোগ হয়েছে','success'); }
+  resetQForm(); renderQList();
+}
+
+function bulkImportQuestions(){
+  const raw=document.getElementById('bulk-import-text').value;
+  const lines=raw.split('\n').map(l=>l.trim()).filter(l=>l);
+  const letterMap={'ক':0,'খ':1,'গ':2,'ঘ':3,'a':0,'b':1,'c':2,'d':3,'A':0,'B':1,'C':2,'D':3};
+  let added=0, failed=0;
+  lines.forEach(line=>{
+    const parts=line.split('|').map(p=>p.trim());
+    if(parts.length<6){ failed++; return; }
+    const [text,o0,o1,o2,o3,correctRaw]=parts;
+    const correct=letterMap[correctRaw];
+    if(!text||!o0||!o1||!o2||!o3||correct===undefined){ failed++; return; }
+    tempQuestions.push({id:"q_"+Date.now().toString(36)+Math.random().toString(36).slice(2,5),text,options:[o0,o1,o2,o3],correct,marks:1});
+    added++;
+  });
+  document.getElementById('bulk-import-text').value='';
+  renderQList();
+  if(added) toast(added+'টি প্রশ্ন ইম্পোর্ট হয়েছে'+(failed?` (${failed}টি বাদ পড়েছে — ফরম্যাট ভুল)`:''),'success');
+  else toast('কোনো প্রশ্ন ইম্পোর্ট হয়নি — ফরম্যাট চেক করুন','warning');
+}
+
+function editQ(i){
+  const q=tempQuestions[i];
+  document.getElementById('aq-text').value=q.text;
+  [0,1,2,3].forEach(j=>document.getElementById('opt-'+j).value=q.options[j]);
+  document.getElementById('aq-marks').value=q.marks||1;
+  clearQImage();
+  if(q.image){
+    currentQImage=q.image;
+    if(!q.image.startsWith('data:')) document.getElementById('aq-image-url').value=q.image;
+    showQImagePreview(q.image);
+  }
+  editQIndex=i; currentCorrect=q.correct; setCorrect(q.correct);
+  document.getElementById('aq-form-title').textContent='✏️ প্রশ্ন '+(i+1)+' সম্পাদনা';
+  document.getElementById('aq-cancel').classList.remove('hide');
+  window.scrollTo(0,0);
+}
+
+function deleteQ(i){ tempQuestions.splice(i,1); renderQList(); document.getElementById('aq-count').textContent=tempQuestions.length+'টি প্রশ্ন'; }
+
+function renderQList(){
+  document.getElementById('aq-count').textContent=tempQuestions.length+'টি প্রশ্ন';
+  const wrap=document.getElementById('q-list-wrap');
+  if(!tempQuestions.length){ wrap.innerHTML=''; return; }
+  wrap.innerHTML=`<div class="card" style="margin-bottom:14px">
+    <h3 style="font-size:15px;color:#0f172a;margin-bottom:14px">প্রশ্নের তালিকা (${tempQuestions.length}টি)</h3>
+    ${tempQuestions.map((q,i)=>`
+      <div class="${i<tempQuestions.length-1?'qa-item':''}">
+        <div class="qa-row" style="margin-bottom:6px">
+          <p style="flex:1;font-size:13px;font-weight:600;color:#0f172a;margin:0"><span style="color:#3b82f6">প্র.${i+1}. </span>${q.text} <span style="color:#94a3b8;font-weight:500;font-size:11px">(${q.marks||1} নম্বর)</span></p>
+          ${q.image?`<img src="${q.image}" style="width:42px;height:42px;object-fit:cover;border-radius:7px;border:1px solid rgba(15,23,42,.1);flex-shrink:0;margin-left:8px"/>`:''}
+          <div style="display:flex;gap:6px;margin-left:8px;flex-shrink:0">
+            <button class="btn purple sm" onclick="editQ(${i})">✏️</button>
+            <button class="btn red sm" onclick="deleteQ(${i})">🗑️</button>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+          ${q.options.map((o,oi)=>`<div style="font-size:12px;padding:3px 9px;border-radius:6px;background:${oi===q.correct?'#d1fae5':'#f8fafc'};color:${oi===q.correct?'#059669':'#64748b'}">${LABELS[oi]}) ${renderLatex(o)}${oi===q.correct?' ✓':''}</div>`).join('')}
+        </div>
+      </div>`).join('')}
+  </div>`;
+}
+
+
+async function explainWithAI(qText,userAnswer,correctAnswer,boxId){
+ const box=document.getElementById(boxId);
+ box.innerHTML='🧠 AI ব্যাখ্যা তৈরি হচ্ছে...';
+ try{
+   const res=await fetch('/.netlify/functions/explain',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+         question:qText,
+         studentAnswer:userAnswer,
+         correctAnswer:correctAnswer
+      })
+   });
+   const data=await res.json();
+   box.innerHTML='<div style="margin-top:8px;padding:10px;border-radius:8px;background:#eef6ff">'+data.explanation+'</div>';
+ }catch(e){
+   box.innerHTML='❌ AI ব্যাখ্যা আনা যায়নি';
+ }
+}
+
+async function saveQuestions(){
+  const ex = exams.find(e=>e.id===editingExamId);
+  if(ex) {
+    ex.questions = tempQuestions;
+    const { id: _, ...payload } = ex;
+    const ok = await fbSet(FIREBASE_EXAMS_URL, editingExamId, payload);
+    if(!ok) return; // fbSet already showed the error toast; don't leave the editor / lose tempQuestions
+    await syncAllData();
+    toast(tempQuestions.length+'টি প্রশ্ন সংরক্ষিত হয়েছে','success');
+  }
+  showAdminDash();
+}
+
+async function showLeaderboard(){
+  await syncAllData();
+  const byStudent={};
+  results.forEach(r=>{
+    const key=(r.studentEmail||r.studentName).trim().toLowerCase();
+    if(!byStudent[key]) byStudent[key]={name:r.studentName,email:r.studentEmail||'',totalPct:0,count:0,exams:0};
+    byStudent[key].totalPct+=(r.score/r.total)*100;
+    byStudent[key].count++;
+  });
+  const rows=Object.values(byStudent).map(s=>({...s,avg:s.totalPct/s.count})).sort((a,b)=>b.avg-a.avg);
+  const wrap=document.getElementById('leaderboard-table-wrap');
+  if(!rows.length){ wrap.innerHTML='<div class="card" style="text-align:center;padding:40px;color:#94a3b8"><div style="font-size:48px">📭</div><p style="margin-top:8px">এখনো কোনো ফলাফল নেই</p></div>'; showScreen('sc-leaderboard'); return; }
+  const medals=['🥇','🥈','🥉'];
+  wrap.innerHTML=`<div class="card" style="overflow-x:auto"><table>
+    <thead><tr><th>র‍্যাংক</th><th>নাম</th><th>Google ইমেইল</th><th>মোট পরীক্ষা দিয়েছে</th><th>গড় শতাংশ</th></tr></thead>
+    <tbody>${rows.map((s,i)=>`<tr>
+      <td style="font-weight:700">${i<3?medals[i]:'#'+(i+1)}</td>
+      <td style="font-weight:600;color:#0f172a">${s.name}</td>
+      <td style="color:#64748b;font-size:12px">${s.email||'—'}</td>
+      <td>${s.count}টি</td>
+      <td style="font-weight:700;color:#6d5dfc">${s.avg.toFixed(1)}%</td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+  showScreen('sc-leaderboard');
+}
+
+let currentViewResults = [];
+
+// RESULTS
+async function showResults(examId){
+  viewResultExamId=examId;
+  await syncAllData();
+  const ex=exams.find(e=>e.id===examId);
+  const res=results.filter(r=>r.examId===examId);
+  currentViewResults=res;
+  document.getElementById('res-title').textContent='📊 ফলাফল: '+ex.name;
+  const avg=res.length?(res.reduce((a,r)=>a+(r.score/r.total)*100,0)/res.length).toFixed(1):'—';
+  const passCount=res.filter(r=>(r.score/r.total)*100>=PASS_MARK).length;
+  document.getElementById('res-subtitle').textContent=res.length+'জন পরীক্ষার্থী | গড়: '+avg+'% | পাস: '+passCount+'জন';
+  document.getElementById('result-search').value='';
+  renderResultsTable(res); renderQuestionAnalytics(ex,res); showScreen('sc-results');
+}
+
+function renderQuestionAnalytics(ex,res){
+  const wrap=document.getElementById('q-analytics-wrap');
+  if(!res.length || !ex.questions || !ex.questions.length){ wrap.innerHTML=''; return; }
+  const stats=ex.questions.map((q,i)=>{
+    let correct=0, attempted=0;
+    res.forEach(r=>{
+      const given=r.answers?r.answers[i]:undefined;
+      if(given!==undefined && given!==-1) attempted++;
+      if(given===q.correct) correct++;
+    });
+    const pct=attempted?Math.round((correct/res.length)*100):0;
+    return {i,text:q.text,pct};
+  }).sort((a,b)=>a.pct-b.pct);
+  wrap.innerHTML=`<div class="card">
+    <h3 style="font-size:14px;color:#0f172a;margin-bottom:12px">📊 প্রশ্ন বিশ্লেষণ (সবচেয়ে কঠিন প্রশ্ন আগে)</h3>
+    ${stats.map(s=>{
+      const c=s.pct>=70?'#10b981':s.pct>=40?'#f59e0b':'#ef4444';
+      return `<div style="margin-bottom:9px">
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px"><span style="color:#374151">প্র.${s.i+1}. ${renderLatex(s.text)}</span><span style="font-weight:700;color:${c}">${s.pct}% সঠিক</span></div>
+        <div style="height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden"><div style="width:${s.pct}%;height:100%;background:${c};border-radius:3px"></div></div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function filterResults(query){
+  const q=query.trim().toLowerCase();
+  const filtered=q?currentViewResults.filter(r=>r.studentName.toLowerCase().includes(q)):currentViewResults;
+  renderResultsTable(filtered);
+}
+
+function exportResultsCSV(){
+  if(!currentViewResults.length){ toast('এখনো কোনো ফলাফল নেই','warning'); return; }
+  const ex=exams.find(e=>e.id===viewResultExamId);
+  const headers=['র‍্যাংক','নাম','Google ইমেইল','পরীক্ষা','নম্বর','মোট','শতাংশ','ফলাফল','তারিখ'];
+  const sorted=[...currentViewResults].sort((a,b)=>b.score-a.score);
+  const rows=sorted.map((r,i)=>[
+    i+1, r.studentName, r.studentEmail||'—', r.examName||ex?.name||'', r.score, r.total,
+    ((r.score/r.total)*100).toFixed(1)+'%',
+    (r.score/r.total)*100>=PASS_MARK?'পাস':'ফেল',
+    new Date(r.submittedAt).toLocaleString()
+  ]);
+  const csv=[headers,...rows].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=(ex?.name||'results')+'_results.csv';a.click();
+  toast('CSV export হয়েছে','success');
+}
+
+function renderResultsTable(res){
+  const wrap=document.getElementById('results-table-wrap');
+  if(!res.length){ wrap.innerHTML='<div class="card" style="text-align:center;padding:40px;color:#94a3b8"><div style="font-size:48px">📭</div><p style="margin-top:8px">এখনো কোনো সাবমিশন নেই</p></div>'; return; }
+  const sorted=[...res].sort((a,b)=>b.score-a.score);
+  const medals=['🥇','🥈','🥉'];
+  // Find duplicate device IDs / duplicate Google accounts (একই পরীক্ষায় একই account থেকে একাধিকবার সাবমিশন হলে — এটা ঘটার কথা না, কারণ selectExam() এটা আগেই আটকায়, কিন্তু পুরনো ডেটা বা ম্যানুয়াল এন্ট্রি থাকলে এখানেও দেখা যাবে)
+  const deviceCount={}, emailCount={};
+  sorted.forEach(r=>{
+    if(r.deviceId) deviceCount[r.deviceId]=(deviceCount[r.deviceId]||0)+1;
+    if(r.studentEmail) emailCount[r.studentEmail.toLowerCase()]=(emailCount[r.studentEmail.toLowerCase()]||0)+1;
+  });
+  wrap.innerHTML=`<div class="card" style="overflow-x:auto;margin-bottom:12px"><table>
+    <thead><tr><th>র‍্যাংক</th><th>নাম</th><th>Google ইমেইল</th><th>নম্বর</th><th>শতাংশ</th><th>ফলাফল</th><th>সময়</th></tr></thead>
+    <tbody>${sorted.map((r,i)=>{
+      const pct=((r.score/r.total)*100).toFixed(1), pass=+pct>=PASS_MARK;
+      const bc=+pct>=80?'#10b981':+pct>=50?'#3b82f6':+pct>=PASS_MARK?'#f59e0b':'#ef4444';
+      const dt=new Date(r.submittedAt);
+      const isDupDevice = r.deviceId && deviceCount[r.deviceId]>1;
+      const isDupEmail = r.studentEmail && emailCount[r.studentEmail.toLowerCase()]>1;
+      const flag = isDupEmail
+        ? `<span title="এই Google অ্যাকাউন্ট থেকে একাধিক সাবমিশন পাওয়া গেছে" style="background:#fee2e2;color:#dc2626;border-radius:6px;padding:1px 7px;font-size:10px;font-weight:700;cursor:help">⚠️ Dup Account</span>`
+        : (isDupDevice ? `<span title="এই device থেকে একাধিক সাবমিশন পাওয়া গেছে" style="background:#fee2e2;color:#dc2626;border-radius:6px;padding:1px 7px;font-size:10px;font-weight:700;cursor:help">⚠️ Dup Device</span>` : '');
+      return `<tr ${(isDupDevice||isDupEmail)?'style="background:rgba(239,68,68,.05)"':''}>
+        <td style="font-weight:700">${i<3?medals[i]:'#'+(i+1)}</td>
+        <td style="font-weight:600;color:#0f172a">${r.studentName} ${flag}</td>
+        <td style="color:#64748b;font-size:12px">${r.studentEmail||'—'}</td>
+        <td>${r.score}/${r.total}</td>
+        <td><div style="display:flex;align-items:center;gap:8px;min-width:110px"><div style="flex:1;height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${bc};border-radius:3px"></div></div><span style="font-weight:600;font-size:12px">${pct}%</span></div></td>
+        <td><span class="badge ${pass?'active':'off'}">${pass?'পাস':'ফেল'}</span></td>
+        <td style="color:#64748b;font-size:12px;white-space:nowrap">${dt.toLocaleDateString('en-BD',{day:'2-digit',month:'short'})} ${dt.toLocaleTimeString('en-BD',{hour:'2-digit',minute:'2-digit'})}</td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table></div>
+  <div style="display:flex;justify-content:flex-end">
+    <button class="btn red" onclick="clearResults()">🗑️ সব ফলাফল মুছুন</button>
+  </div>`;
+}
+
+function clearResults(){
+  showModal('⚠️','ফলাফল মুছুন','এই পরীক্ষার সব ফলাফল মুছে যাবে।', async ()=>{
+    const targetResults = results.filter(r=>r.examId===viewResultExamId);
+    for(let r of targetResults) {
+      await fbDelete(FIREBASE_RESULTS_URL, r.id);
+    }
+    await syncAllData();
+    currentViewResults=[];
+    renderResultsTable([]);
+    document.getElementById('q-analytics-wrap').innerHTML='';
+    document.getElementById('res-subtitle').textContent='০জন পরীক্ষার্থী | গড়: —';
+    renderDashStats();
+    toast('সব ফলাফল মুছে গেছে','success');
+  });
+}
+
+// ── STUDENT ──
+async function goStudent(){ 
+  await syncAllData();
+  googleStudentProfile = null;
+  initGoogleSignIn();
+  renderGoogleButton();
+  showScreen('sc-student-name'); 
+}
+
+async function lookupMyResults(){
+  const n=document.getElementById('mr-name').value.trim();
+  if(!n){ toast('নাম দিন','warning'); return; }
+  await syncAllData();
+  const mine=results.filter(r=>r.studentName.trim().toLowerCase()===n.toLowerCase())
+    .sort((a,b)=>new Date(b.submittedAt)-new Date(a.submittedAt));
+  const wrap=document.getElementById('mr-list');
+  if(!mine.length){ wrap.innerHTML='<div style="text-align:center;color:#94a3b8;padding:20px 0">কোনো ফলাফল পাওয়া যায়নি।</div>'; return; }
+  wrap.innerHTML=mine.map(r=>{
+    const pct=((r.score/r.total)*100).toFixed(1), pass=+pct>=PASS_MARK;
+    const dt=new Date(r.submittedAt);
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(15,23,42,.07)">
+      <div>
+        <div style="font-weight:600;font-size:13px;color:#0f172a">${r.examName}</div>
+        <div style="font-size:11px;color:#94a3b8">${dt.toLocaleDateString('en-BD',{day:'2-digit',month:'short',year:'numeric'})}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-weight:700;color:${pass?'#059669':'#dc2626'}">${r.score}/${r.total} (${pct}%)</div>
+        <span class="badge ${pass?'active':'off'}" style="font-size:10px">${pass?'পাস':'ফেল'}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function examWindowStatus(ex){
+  const now=Date.now();
+  if(ex.startAt && now < new Date(ex.startAt).getTime()) return 'upcoming';
+  if(ex.endAt && now > new Date(ex.endAt).getTime()) return 'ended';
+  return 'open';
+}
+
+function renderStudentExamList(){
+  const el=document.getElementById('student-exam-list');
+  const avail=exams.filter(e=>e.active && e.questions && e.questions.length>0 && examWindowStatus(e)!=='ended');
+  if(!avail.length){ el.innerHTML='<div class="card" style="text-align:center;padding:40px;color:#94a3b8"><div style="font-size:48px">😔</div><p style="margin-top:8px">এই মুহূর্তে কোনো পরীক্ষা নেই।</p></div>'; return; }
+  el.innerHTML=avail.map(ex=>{
+    const win=examWindowStatus(ex);
+    const upcoming=win==='upcoming';
+    return `
+    <button class="sexam-card" ${upcoming?'style="opacity:.6;cursor:not-allowed"':''} onclick="${upcoming?'toast(\'এই পরীক্ষা এখনো শুরু হয়নি\',\'warning\')':'selectExam(\''+ex.id+'\')'}">
+      <div style="width:48px;height:48px;border-radius:12px;background:#eff6ff;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">📝</div>
+      <div style="flex:1">
+        <h3 style="font-size:16px;color:#0f172a;margin:0 0 4px">${ex.name} ${upcoming?'<span class="badge off">শীঘ্রই</span>':''}</h3>
+        <div style="color:#64748b;font-size:12px;display:flex;gap:12px;flex-wrap:wrap"><span>📚 ${ex.subject}</span><span>⏱ ${ex.duration} মিনিট</span><span>❓ ${ex.questions.length}টি MCQ</span>${ex.startAt?`<span>🗓 ${new Date(ex.startAt).toLocaleString('en-BD',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})} থেকে</span>`:''}</div>
+      </div>
+      <span style="color:#3b82f6;font-size:24px">›</span>
+    </button>`;
+  }).join('');
+}
+
+let pendingExamId = null;
+
+async function selectExam(id){ 
+  await syncAllData();
+  const ex=exams.find(e=>e.id===id);
+  const myEmail = googleStudentProfile?.email || null;
+  const alreadyTaken=results.find(r=>r.examId===id && (
+    (myEmail && r.studentEmail && r.studentEmail.toLowerCase()===myEmail) ||
+    r.studentName.trim().toLowerCase()===studentName.trim().toLowerCase() ||
+    (r.deviceId && r.deviceId===getDeviceId())
+  ));
+  if(alreadyTaken){
+    const sameEmail = myEmail && alreadyTaken.studentEmail && alreadyTaken.studentEmail.toLowerCase()===myEmail;
+    const sameDevice = alreadyTaken.deviceId && alreadyTaken.deviceId===getDeviceId();
+    let msg;
+    if(sameEmail){
+      msg = `আপনার Google অ্যাকাউন্ট (${alreadyTaken.studentEmail}) দিয়ে এই পরীক্ষা আগে "${alreadyTaken.studentName}" নামে দেওয়া হয়ে গেছে। প্রতিটি পরীক্ষা একবারই দেওয়া যাবে।`;
+    } else if(sameDevice && alreadyTaken.studentName.trim().toLowerCase()!==studentName.trim().toLowerCase()){
+      msg = `এই পরীক্ষা আগে "${alreadyTaken.studentName}" নামে দেওয়া হয়েছে এই device থেকে।`;
+    } else {
+      msg = 'আপনি এই পরীক্ষা আগে দিয়েছেন। প্রতিটি পরীক্ষা শুধুমাত্র একবার দেওয়া যাবে।';
+    }
+    showModal('⚠️','পরীক্ষা দেওয়া হয়ে গেছে', msg, null);
+    document.getElementById('modal-cancel').textContent='ঠিক আছে';
+    document.getElementById('modal-ok').style.display='none';
+    return;
+  }
+  const win=examWindowStatus(ex);
+  if(win!=='open'){
+    toast(win==='upcoming'?'এই পরীক্ষা এখনো শুরু হয়নি':'এই পরীক্ষার সময়সীমা শেষ হয়ে গেছে','warning');
+    return;
+  }
+  // Check access code
+  if(ex.code){
+    pendingExamId=id;
+    document.getElementById('code-modal-title').textContent='🔑 কোড দিন: '+ex.name;
+    document.getElementById('code-input').value='';
+    document.getElementById('code-err').style.display='none';
+    document.getElementById('code-modal-bg').classList.remove('hide');
+    setTimeout(()=>document.getElementById('code-input').focus(),100);
+    return;
+  }
+  beginOrResumeExam(ex);
+}
+
+function beginOrResumeExam(ex){
+  const saved=loadProgress(ex.id,studentName);
+  if(saved && saved.deadline>Date.now()){
+    currentExam=ex; currentExam.questions=saved.questions;
+    currentAnswers=saved.answers||{}; markedForReview=saved.review||{};
+    currentQ=saved.currentQ||0; examDeadline=saved.deadline;
+    toast('আগের অসমাপ্ত পরীক্ষা থেকে চালিয়ে যাচ্ছেন','info');
+    startExam(true);
+  } else {
+    currentExam=ex; currentAnswers={}; currentQ=0; markedForReview={};
+    examDeadline=Date.now()+ex.duration*60*1000;
+    startExam(false);
+  }
+}
+
+function verifyExamCode(){
+  const ex=exams.find(e=>e.id===pendingExamId);
+  const entered=document.getElementById('code-input').value.trim().toUpperCase();
+  if(entered===ex.code){
+    closeCodeModal();
+    beginOrResumeExam(ex);
+  } else {
+    document.getElementById('code-err').style.display='block';
+    document.getElementById('code-input').value='';
+    document.getElementById('code-input').focus();
+  }
+}
+
+function closeCodeModal(){
+  document.getElementById('code-modal-bg').classList.add('hide');
+  pendingExamId=null;
+}
+
+// ── EXAM ──
+let markedForReview = {};
+
+function startExam(resumed){
+  clearTimer();
+  tabWarnings=0; // Bug fix: reset anti-cheat warning counter for each new exam session
+  if(!resumed){ markedForReview={}; }
+  timeLeft=Math.max(0,Math.round((examDeadline-Date.now())/1000));
+  lowTimeBeeped=false;
+  document.getElementById('te-name').textContent=currentExam.name;
+  renderQNav(); renderQuestion(); updateProgressTxt();
+  showScreen('sc-take-exam');
+  if(timeLeft<=0){ window.submitExam(); return; }
+  timerInterval=setInterval(tickTimer,1000);
+  updateTimerDisplay();
+  saveProgress();
+  // Request fullscreen for anti-cheat
+  try{
+    const el=document.documentElement;
+    if(el.requestFullscreen) el.requestFullscreen();
+    else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+  }catch(e){}
+}
+
+function tickTimer(){
+  timeLeft--; updateTimerDisplay();
+  if(timeLeft===60 && !lowTimeBeeped){ lowTimeBeeped=true; playBeep(); }
+  if(timeLeft<=0){ clearTimer(); window.submitExam(); }
+}
+
+function playBeep(){
+  try{
+    const ctx=new (window.AudioContext||window.webkitAudioContext)();
+    [0,1].forEach(i=>{
+      const osc=ctx.createOscillator(), gain=ctx.createGain();
+      osc.type='sine'; osc.frequency.value=880;
+      gain.gain.value=0.001;
+      osc.connect(gain); gain.connect(ctx.destination);
+      const t=ctx.currentTime+i*0.35;
+      gain.gain.setValueAtTime(0.0001,t);
+      gain.gain.exponentialRampToValueAtTime(0.25,t+0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001,t+0.28);
+      osc.start(t); osc.stop(t+0.3);
+    });
+    toast('⏰ আর ১ মিনিট সময় বাকি!','warning',4000);
+  }catch(e){}
+}
+
+function updateTimerDisplay(){
+  const m=Math.floor(timeLeft/60), s=timeLeft%60;
+  const v=document.getElementById('timer-val'), box=document.getElementById('timer-box');
+  v.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  if(timeLeft<=60){ v.style.color='#ef4444'; box.style.borderColor='#ef4444'; box.style.background='linear-gradient(135deg,#fff5f5,#ffe4e6)'; box.style.boxShadow='0 0 0 4px rgba(239,68,68,.12),0 6px 18px rgba(239,68,68,.25)'; box.style.animation='pulseTimer 1s ease-in-out infinite'; }
+  else if(timeLeft<=120){ v.style.color='#f59e0b'; box.style.borderColor='#f59e0b'; box.style.background='linear-gradient(135deg,#fffbeb,#fef3c7)'; box.style.boxShadow='0 0 0 4px rgba(245,158,11,.12),0 6px 18px rgba(245,158,11,.2)'; box.style.animation='none'; }
+  else{ v.style.color='#0f172a'; box.style.borderColor='rgba(109,93,252,.25)'; box.style.background='linear-gradient(135deg,#f8faff,#eef2ff)'; box.style.boxShadow='0 4px 14px rgba(109,93,252,.12)'; box.style.animation='none'; }
+}
+
+function clearTimer(){ if(timerInterval){ clearInterval(timerInterval); timerInterval=null; } }
+
+function renderQNav(){
+  document.getElementById('qnav').innerHTML=currentExam.questions.map((_,i)=>{
+    const answered=currentAnswers[i]!==undefined;
+    const reviewed=markedForReview[i];
+    let cls='qbtn ';
+    if(i===currentQ) cls+='current';
+    else if(reviewed && answered) cls+='review-answered';
+    else if(reviewed) cls+='review';
+    else if(answered) cls+='answered';
+    else cls+='unanswered';
+    return `<button class="${cls}" onclick="jumpQ(${i})">${i+1}</button>`;
+  }).join('');
+}
+
+function renderQuestion(){
+  const q=currentExam.questions[currentQ];
+  const isLocked=currentAnswers[currentQ]!==undefined;
+  document.getElementById('q-badge').textContent='প্রশ্ন '+(currentQ+1)+' / '+currentExam.questions.length;
+  document.getElementById('q-text').innerHTML=renderLatex(q.text);
+  const imgWrap=document.getElementById('q-image-wrap');
+  if(q.image){ imgWrap.innerHTML=`<img src="${q.image}" style="max-width:100%;border-radius:12px;margin-bottom:14px;display:block"/>`; imgWrap.classList.remove('hide'); }
+  else{ imgWrap.innerHTML=''; imgWrap.classList.add('hide'); }
+  // Sync review button
+  const reviewBtn=document.getElementById('btn-review');
+  const isReviewed=!!markedForReview[currentQ];
+  reviewBtn.classList.toggle('marked',isReviewed);
+  reviewBtn.textContent=isReviewed?'⚑ রিভিউ চিহ্নিত':'⚑ রিভিউ করব';
+  document.getElementById('q-options').innerHTML=q.options.map((o,oi)=>{
+    const sel=currentAnswers[currentQ]===oi;
+    const cursor=isLocked?'not-allowed':'pointer';
+    // Bug fix: these colors were always light/white regardless of theme, so
+    // in dark mode the option cards stayed bright white — and the darker
+    // text colors needed for light-mode readability would then be invisible
+    // on that same white card. Branching on body.dark keeps both the card
+    // background and its text correctly paired for either theme.
+    const dm=document.body.classList.contains('dark');
+    const bg=sel?(dm?'linear-gradient(135deg,#2a2570,#0e3a45)':'linear-gradient(135deg,#eef2ff,#ecfeff)')
+              :isLocked?(dm?'#11162a':'#f8f8f8')
+              :(dm?'#161b30':'#fafbff');
+    const border=sel?'#6d5dfc':(dm?'rgba(255,255,255,.12)':'#e2e8f0');
+    const shadow=sel?'0 6px 20px -4px rgba(109,93,252,.35)':'none';
+    const lblBg=sel?'linear-gradient(135deg,#6d5dfc,#06b6d4)':(dm?'#1e2540':'#fff');
+    const lblBorder=sel?'#6d5dfc':(dm?'rgba(255,255,255,.16)':'#e2e8f0');
+    const lblColor=sel?'#fff':(dm?'#94a3b8':'#94a3b8');
+    const txtColor=sel?(dm?'#e0e7ff':'#1e1b4b'):isLocked?(dm?'#94a3b8':'#475569'):(dm?'#f1f5f9':'#000');
+    const txtWeight=sel?700:500;
+    return `<button class="opt-btn" onclick="selectOpt(${oi})" style="border:2px solid ${border};background:${bg};cursor:${cursor};box-shadow:${shadow};">
+      <span class="opt-label" style="border-color:${lblBorder};background:${lblBg};color:${lblColor}">${LABELS[oi]}</span>
+      <span class="opt-btn-text" style="color:${txtColor};font-weight:${txtWeight};flex:1">${renderLatex(o)}</span>
+      ${sel?'<span style="margin-left:auto;font-size:16px;flex-shrink:0">🔒</span>':''}
+    </button>`;
+  }).join('');
+  document.getElementById('btn-prev').classList.toggle('hide',currentQ===0);
+  document.getElementById('btn-next').classList.toggle('hide',currentQ===currentExam.questions.length-1);
+  const pct=(Object.keys(currentAnswers).length/currentExam.questions.length)*100;
+  document.getElementById('progress-bar').style.width=pct+'%';
+  renderQNav();
+}
+
+function updateProgressTxt(){ document.getElementById('te-progress-txt').textContent=studentName+' • '+Object.keys(currentAnswers).length+'/'+currentExam.questions.length+' উত্তর দেওয়া'; }
+
+function toggleReview(){
+  markedForReview[currentQ]=!markedForReview[currentQ];
+  const btn=document.getElementById('btn-review');
+  btn.classList.toggle('marked',!!markedForReview[currentQ]);
+  btn.textContent=markedForReview[currentQ]?'⚑ রিভিউ চিহ্নিত':'⚑ রিভিউ করব';
+  renderQNav();
+  saveProgress();
+}
+
+function selectOpt(oi){ 
+  if(currentAnswers[currentQ]!==undefined) return; 
+  currentAnswers[currentQ]=oi; renderQuestion(); updateProgressTxt(); 
+  saveProgress();
+}
+function jumpQ(i){ currentQ=i; renderQuestion(); saveProgress(); }
+function goPrev(){ if(currentQ>0){currentQ--;renderQuestion();saveProgress();} }
+function goNext(){ if(currentQ<currentExam.questions.length-1){currentQ++;renderQuestion();saveProgress();} }
+
+function showSubmitModal(){
+  const ans=Object.keys(currentAnswers).length;
+  showModal('📝','পরীক্ষা জমা দিন','আপনি '+ans+'/'+currentExam.questions.length+'টি প্রশ্নের উত্তর দিয়েছেন। জমা দিতে চান?',()=>window.submitExam());
+}
+
+async function submitExam(){
+  clearTimer(); closeModal();
+  // Exit fullscreen
+  try{ if(document.exitFullscreen) document.exitFullscreen(); }catch(e){}
+  showLoading('ফলাফল সংরক্ষণ হচ্ছে...');
+  const answers=currentExam.questions.map((_,i)=>currentAnswers[i]!==undefined?currentAnswers[i]:-1);
+  let score=0;
+  currentExam.questions.forEach((q,i)=>{
+    const m=q.marks||1;
+    if(answers[i]===q.correct) score+=m;
+    else if(answers[i]!==-1 && currentExam.negativeMarking) score-=(currentExam.negativeValue||0);
+  });
+  score=Math.max(0,Math.round(score*100)/100);
+  const total=currentExam.questions.reduce((a,q)=>a+(q.marks||1),0);
+
+  const resultId = "res_" + Math.random().toString(36).slice(2, 10);
+  const resultData = {examId:currentExam.id,examName:currentExam.name,studentName,studentEmail:googleStudentProfile?.email||null,googleId:googleStudentProfile?.sub||null,score,total,answers,submittedAt:new Date().toISOString(),deviceId:getDeviceId()};
+
+  // Bug fix (offline resilience): previously, if fbSet() failed — e.g. no
+  // internet at the moment of submit — the result was silently lost; the
+  // student would just see "জমা হয়নি" with nothing saved anywhere. Now we
+  // only attempt the live write when online, and if it fails for any reason
+  // (offline, or the request itself errors out), the result is queued
+  // locally via queueSubmission() and auto-synced once the connection is
+  // back (see the OFFLINE RESILIENCE LAYER script block).
+  let ok=false;
+  if(navigator.onLine){
+    ok = await fbSet(FIREBASE_RESULTS_URL, resultId, resultData);
+  }
+  if(ok){
+    await syncAllData();
+    hideLoading();
+    toast('পরীক্ষা সফলভাবে জমা হয়েছে','success');
+  } else {
+    if(typeof queueSubmission==='function') queueSubmission(resultId, resultData);
+    hideLoading();
+    toast('📥 নেট সংযোগ নেই — উত্তর স্থানীয়ভাবে জমা রাখা হয়েছে, সংযোগ ফিরলে স্বয়ংক্রিয়ভাবে সিঙ্ক হবে','warning',6500);
+    if(typeof showNetBanner==='function') showNetBanner('offline','📡 অফলাইন — ১টি ফলাফল sync-এর অপেক্ষায়');
+  }
+  showExamResult(resultData);
+}
+
+
+function showExamResult(r){
+  const pct=((r.score/r.total)*100).toFixed(1), pass=+pct>=PASS_MARK;
+  const grade=+pct>=80?{g:'A+',c:'#10b981'}:+pct>=70?{g:'A',c:'#22c55e'}:+pct>=60?{g:'A-',c:'#3b82f6'}:+pct>=50?{g:'B',c:'#6366f1'}:+pct>=40?{g:'C',c:'#f59e0b'}:+pct>=PASS_MARK?{g:'D',c:'#f97316'}:{g:'F',c:'#ef4444'};
+  document.getElementById('r-emoji').textContent=pass?'🎉':'😔';
+  document.getElementById('r-name').textContent=r.studentName;
+  document.getElementById('r-exam-name').textContent=r.examName;
+  document.getElementById('r-stats').innerHTML=[{v:r.score,sub:'/'+r.total+' নম্বর'},{v:pct+'%',sub:'শতাংশ'},{v:grade.g,sub:'গ্রেড'}]
+    .map((s,i)=>`<div class="rstat" ${i===2?'style="border:none"':''}><div class="rv" style="color:${grade.c}">${s.v}</div><div class="rs">${s.sub}</div></div>`).join('');
+  const vd=document.getElementById('r-verdict');
+  vd.style.background=pass?'linear-gradient(135deg,#d1fae5,#a7f3d0)':'linear-gradient(135deg,#fee2e2,#fecaca)';
+  vd.innerHTML=`<span style="font-weight:700;font-size:15px;color:${pass?'#059669':'#dc2626'}">${pass?'✅ উত্তীর্ণ (পাস)':'❌ অনুত্তীর্ণ (ফেল)'}</span>`;
+  setTimeout(()=>{ document.getElementById('r-bar').style.width=pct+'%'; document.getElementById('r-bar').style.background='linear-gradient(90deg,'+grade.c+','+grade.c+'88)'; },100);
+  document.getElementById('r-pct-label').textContent=pct+'%';
+  document.getElementById('r-breakdown').innerHTML=currentExam.questions.map((q,i)=>{
+    const given=r.answers[i], ok=given===q.correct, skip=given===-1||given===undefined;
+    return `<div class="qa-item"><div class="qa-row">
+      <div class="qa-dot ${ok?'ok':skip?'skip':'wrong'}">${ok?'✓':skip?'—':'✗'}</div>
+      <div style="flex:1">
+        <p style="margin:0 0 4px;font-size:13px;font-weight:700;color:#000">প্র.${i+1}: ${renderLatex(q.text)}</p>
+        ${q.image?`<img src="${q.image}" style="max-width:140px;border-radius:8px;margin:0 0 6px;display:block"/>`:''}
+        <div style="font-size:12px;display:flex;flex-wrap:wrap;gap:8px">
+          ${!skip?`<span style="color:${ok?'#059669':'#dc2626'}">আপনি: ${LABELS[given]}) ${renderLatex(q.options[given])}</span>`:'<span style="color:#64748b">উত্তর দেননি</span>'}
+          ${!ok?`<span style="color:#059669">✓ সঠিক: ${LABELS[q.correct]}) ${renderLatex(q.options[q.correct])}</span>`:''}
+        </div>
+      </div>
+    </div></div>`;
+  }).join('');
+  showScreen('sc-exam-result');
+}
+
+function showModal(icon,title,msg,onOk){
+  document.getElementById('modal-icon').textContent=icon;
+  document.getElementById('modal-title').textContent=title;
+  document.getElementById('modal-msg').textContent=msg;
+  document.getElementById('modal-ok').onclick=()=>{ onOk&&onOk(); closeModal(); };
+  document.getElementById('modal').classList.remove('hide');
+}
+function closeModal(){ 
+  document.getElementById('modal').classList.add('hide'); 
+  document.getElementById('modal-ok').style.display='';
+  document.getElementById('modal-cancel').textContent='বাতিল';
+}
+
+window.addEventListener('beforeunload',()=>{ if(currentExam && timerInterval) saveProgress(); });
+
+// Bug fix: the loading-overlay / toast-container / etc. elements are
+// declared further down in <body>, after this script block. Calling init()
+// immediately (synchronously, during HTML parsing) meant those elements
+// didn't exist yet, which used to crash syncAllData() silently before it
+// could even fetch exams/results. Waiting for 'load' guarantees the whole
+// document has been parsed first.
+if(document.readyState==='complete'){ init(); } else { window.addEventListener('load', init); }
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithCredential } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+const firebaseConfig={apiKey:"AIzaSyBUxRagOlg0EIBDWTxNxsWUVDAkMukY9eA",authDomain:"shoheb-exam-portal.firebaseapp.com",databaseURL:"https://shoheb-exam-portal-default-rtdb.firebaseio.com",projectId:"shoheb-exam-portal",storageBucket:"shoheb-exam-portal.firebasestorage.app",messagingSenderId:"493895689529",appId:"1:493895689529:web:72fe62b4fe1665914974e8"};
+const app=initializeApp(firebaseConfig);const auth=getAuth(app);
+// Bug fix: fbGet/fbSet/fbDelete talk to the Realtime Database over plain
+// REST calls with no auth info attached at all. If the database's security
+// rules require a signed-in user for writes (a very common setup), every
+// write from this app was being silently rejected by Firebase — the fetch()
+// call still "succeeds" in JS (it only rejects on network failures, not on
+// permission-denied HTTP responses), so the code showed a false "সংরক্ষিত
+// হয়েছে" success toast while nothing was actually saved. Exposing the
+// current user's ID token lets the REST calls authenticate properly.
+window.getFbIdToken=async()=>{ try{ return auth.currentUser ? await auth.currentUser.getIdToken() : null; }catch(e){ return null; } }
+window.firebaseAdminLogin=async()=>{const pw=document.getElementById('pw-input').value;const err=document.getElementById('pw-err');try{await signInWithEmailAndPassword(auth,'admin@shoheb.com',pw);err.style.display='none';document.getElementById('pw-input').value='';await syncAllData();showAdminDash();}catch(e){console.log(e);err.style.display='block';}}
+window.firebaseAdminLogout=async()=>{await signOut(auth);showScreen('sc-home');}
+// ── STUDENT GOOGLE SIGN-IN → real Firebase Auth session ──
+// আগে আমরা শুধু Google-এর ID token decode করতাম, কিন্তু signature কখনো
+// যাচাই হতো না — তাই কেউ চাইলে ভুয়া token বানিয়ে identity spoof করতে পারতো।
+// এখন এই ID token দিয়ে আসলেই Firebase Auth-এ সাইন-ইন করি, যা Google-এর সাথে
+// signature যাচাই করে। তখন auth.token.email সত্যিকারের যাচাইকৃত ইমেইল হয়,
+// আর Realtime Database Rules সেটা দিয়ে লেখা আটকাতে/অনুমতি দিতে পারে।
+window.firebaseSignInWithGoogleIdToken=async(idToken)=>{
+  try{
+    const cred=GoogleAuthProvider.credential(idToken);
+    const result=await signInWithCredential(auth,cred);
+    return result.user;
+  }catch(e){
+    console.error('Firebase Google sign-in failed:', e.code, e.message, e);
+    // Bug fix: previously this only returned null, so the UI always showed
+    // a generic "যাচাই করা যায়নি" message no matter what actually went
+    // wrong (wrong/missing OAuth client, Google provider not enabled in
+    // Firebase, unauthorized domain, popup blocked, etc). Stashing the real
+    // Firebase error code lets handleGoogleCredentialResponse show a much
+    // more specific, actionable message instead.
+    window._lastGoogleSignInError = e;
+    return null;
+  }
+}
+window.firebaseSignOutStudent=async()=>{ try{ await signOut(auth); }catch(e){} }
+onAuthStateChanged(auth,(u)=>{
+  // Bug fix: only auto-redirect to admin if user is on the login screen,
+  // not on every page load/refresh regardless of current screen.
+  if(u){
+    const loginScreen = document.getElementById('sc-admin-login');
+    const isOnLoginScreen = loginScreen && !loginScreen.classList.contains('hide');
+    if(isOnLoginScreen){
+      syncAllData().then(()=>showAdminDash());
+    }
+  }
+})
+</script>
+<script>
+// ── ANTI-CHEAT (Enhanced) ──
+let tabWarnings=0;
+
+function isInExam(){
+  return !document.getElementById('sc-take-exam').classList.contains('hide');
+}
+
+// Tab visibility warning
+document.addEventListener("visibilitychange",()=>{
+  if(document.hidden && isInExam()){
+    tabWarnings++;
+    if(tabWarnings>=2){
+      toast('অনেকবার ট্যাব বদল করেছেন। পরীক্ষা স্বয়ংক্রিয়ভাবে জমা হচ্ছে...','error',4000);
+      // Bug fix: call window.submitExam() to go through the double-submit guard wrapper
+      setTimeout(()=>{if(typeof window.submitExam==='function') window.submitExam();},1800);
+    } else {
+      toast('⚠️ ট্যাব বদলাবেন না! সতর্কতা ('+tabWarnings+'/2)','warning',4000);
+    }
+  }
+});
+
+// Disable right-click during exam
+document.addEventListener('contextmenu',e=>{
+  if(isInExam()){e.preventDefault();toast('পরীক্ষা চলাকালীন এটি করা যাবে না','warning');}
+});
+
+// Disable dev-tools shortcuts & copy-paste during exam
+document.addEventListener('keydown',e=>{
+  if(!isInExam()) return;
+  const blocked=(e.key==='F12')||(e.ctrlKey&&e.shiftKey&&['I','J','C','K'].includes(e.key))||(e.ctrlKey&&['u','U','a','A','c','C'].includes(e.key));
+  if(blocked){e.preventDefault();toast('পরীক্ষা চলাকালীন এটি করা যাবে না','warning');}
+});
+
+// Fullscreen enforcement
+document.addEventListener('fullscreenchange',()=>{
+  if(!document.fullscreenElement && isInExam()){
+    const banner=document.getElementById('fs-warn-banner');
+    tabWarnings++;
+    if(tabWarnings>=2){
+      toast('Fullscreen ছেড়েছেন — পরীক্ষা জমা হচ্ছে!','error',4000);
+      // Bug fix: call window.submitExam() to go through the double-submit guard wrapper
+      setTimeout(()=>{if(typeof window.submitExam==='function') window.submitExam();},1800);
+    } else {
+      banner.textContent='⚠️ Fullscreen ছেড়ে দিয়েছেন! সতর্কতা ('+tabWarnings+'/2) — পরীক্ষায় ফিরে fullscreen রাখুন।';
+      banner.classList.remove('hide');
+      setTimeout(()=>banner.classList.add('hide'),5000);
+      try{const el=document.documentElement;if(el.requestFullscreen)el.requestFullscreen();}catch(e){}
+    }
+  }
+});
+
+// shuffle is defined in the script below — no duplicate needed
+window.addEventListener('load',()=>{console.log('Anti-cheat v2 enabled');});
+</script>
+
+
+
+<script>
+let submitted=false;
+
+// ── prevent double submit ──
+const oldSubmit=window.submitExam;
+if(oldSubmit){
+window.submitExam=async function(){
+ if(submitted) return;
+ submitted=true;
+ try{
+   if(typeof studentName!=='undefined' && studentName){
+     localStorage.setItem('examDone_'+studentName,'true');
+   }
+   if(typeof currentExam!=='undefined' && currentExam && typeof clearProgress==='function'){
+     clearProgress(currentExam.id, studentName);
+   }
+ }catch(e){}
+ return await oldSubmit.apply(this,arguments);
+}
+}
+
+// ── duplicate prevention is handled per-exam inside selectExam() ──
+// (এখন প্রধান পরিচয় Google ইমেইল — দেখুন selectExam() ও handleGoogleCredentialResponse())
+
+// ── shuffle questions AND fix correct index ──
+const oldStart=window.startExam;
+function shuffle(a){for(let i=a.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a;}
+if(oldStart){
+window.startExam=function(resumed){
+ try{
+   if(!resumed && typeof currentExam!=='undefined' && currentExam?.questions){
+     currentExam.questions=shuffle([...currentExam.questions]);
+     currentExam.questions.forEach(q=>{
+      if(q.options){
+        const correctText=q.options[q.correct];
+        q.options=shuffle([...q.options]);
+        q.correct=q.options.indexOf(correctText);
+      }
+     });
+   }
+ }catch(e){}
+ submitted=false; // reset submitted flag for new exam
+ return oldStart.apply(this,arguments);
+}
+}
+</script>
+
+<script>
+// ════════════════════════════════════════════════════════════════════
+// ── OFFLINE RESILIENCE LAYER ──
+// নেট চলে গেলেও exam বন্ধ হবে না:
+//   • প্রতি ৫ সেকেন্ডে auto-save (চলমান পরীক্ষার progress)
+//   • Wi-Fi ফিরে এলে auto-sync (queued submit + progress)
+//   • Submit-এর সময় নেট না থাকলে → স্থানীয়ভাবে queue করে রাখা হয়
+//     (ফলাফল হারায় না, ছাত্র তার score-ও দেখতে পায়, পরে net এলে auto sync)
+//   • Browser refresh / power failure / PC restart হলেও resume (যদি
+//     সময় শেষ না হয়ে থাকে) — deadline timestamp-based বলে এটা already
+//     কাজ করে (beginOrResumeExam), এখানে কেবল data-loss window কমানো হলো
+//   • Duplicate submit prevention — queue-তে থাকা/sync না হওয়া পরীক্ষাও
+//     যাতে দ্বিতীয়বার শুরু করা না যায়
+//   • Network status banner
+// ════════════════════════════════════════════════════════════════════
+
+const SUBMIT_QUEUE_KEY='examSubmitQueue';
+
+function getSubmitQueue(){
+  try{ const raw=localStorage.getItem(SUBMIT_QUEUE_KEY); return raw?JSON.parse(raw):[]; }
+  catch(e){ return []; }
+}
+function setSubmitQueue(q){
+  try{ localStorage.setItem(SUBMIT_QUEUE_KEY, JSON.stringify(q)); }catch(e){}
+}
+function queueSubmission(resultId, resultData){
+  const q=getSubmitQueue();
+  q.push({resultId, resultData, queuedAt:Date.now()});
+  setSubmitQueue(q);
+  // Mark locally as "done" immediately so duplicate-prevention still works
+  // even before this reaches Firebase.
+  try{
+    localStorage.setItem('examQueuedDone_'+resultData.examId+'_'+(resultData.studentName||'').trim().toLowerCase(), JSON.stringify({
+      resultId, examId:resultData.examId, studentName:resultData.studentName,
+      studentEmail:resultData.studentEmail||null, deviceId:resultData.deviceId
+    }));
+  }catch(e){}
+}
+
+// Returns true if this exam was already taken/queued locally on this device
+// (covers the gap between "submitted offline" and "actually synced to Firebase").
+function isExamQueuedLocally(examId, name){
+  try{
+    const key='examQueuedDone_'+examId+'_'+(name||'').trim().toLowerCase();
+    const raw=localStorage.getItem(key);
+    return raw?JSON.parse(raw):null;
+  }catch(e){ return null; }
+}
+
+let isFlushingQueue=false;
+async function flushSubmitQueue(){
+  if(isFlushingQueue) return;
+  const queue=getSubmitQueue();
+  if(queue.length===0) return;
+  if(!navigator.onLine) return;
+  isFlushingQueue=true;
+  showNetBanner('syncing', '🔄 সংযোগ ফিরে এসেছে — সিঙ্ক হচ্ছে...');
+  const remaining=[];
+  let syncedCount=0;
+  for(const item of queue){
+    try{
+      const ok=await fbSet(FIREBASE_RESULTS_URL, item.resultId, item.resultData);
+      if(ok){ syncedCount++; }
+      else{ remaining.push(item); }
+    }catch(e){ remaining.push(item); }
+  }
+  setSubmitQueue(remaining);
+  isFlushingQueue=false;
+  if(syncedCount>0){
+    try{ await syncAllData(); }catch(e){}
+    toast('✅ '+syncedCount+'টি জমাকৃত ফলাফল সফলভাবে সিঙ্ক হয়েছে','success',4500);
+  }
+  if(remaining.length===0){
+    showNetBanner('online', '🟢 সংযোগ স্থাপিত হয়েছে — সব ডেটা সিঙ্ক করা আছে');
+    setTimeout(hideNetBanner, 3000);
+  } else {
+    showNetBanner('offline', '⏳ '+remaining.length+'টি ফলাফল এখনো সিঙ্ক বাকি — চেষ্টা চলছে');
+  }
+}
+
+// ── NETWORK STATUS BANNER ──
+function showNetBanner(type, text){
+  const el=document.getElementById('net-status-banner');
+  const txt=document.getElementById('net-status-text');
+  if(!el||!txt) return;
+  txt.textContent=text;
+  el.className='show '+type;
+  // Avoid overlapping the (rarer, more urgent) anti-cheat fullscreen banner
+  // if both happen to be visible at the same moment.
+  const fsBanner=document.getElementById('fs-warn-banner');
+  el.style.top=(fsBanner && !fsBanner.classList.contains('hide')) ? (fsBanner.offsetHeight+'px') : '0';
+}
+function hideNetBanner(){
+  const el=document.getElementById('net-status-banner');
+  if(!el) return;
+  el.classList.remove('show');
+}
+
+function handleOffline(){
+  const q=getSubmitQueue();
+  const suffix=q.length>0?(' — '+q.length+'টি ফলাফল sync-এর অপেক্ষায়'):'';
+  showNetBanner('offline', '📡 ইন্টারনেট সংযোগ বিচ্ছিন্ন — উত্তর local-এ সংরক্ষিত হচ্ছে'+suffix);
+}
+function handleOnline(){
+  showNetBanner('syncing', '🔄 সংযোগ ফিরে এসেছে — সিঙ্ক হচ্ছে...');
+  // Re-save current progress immediately so the latest state is captured,
+  // then flush any queued offline submissions.
+  try{ if(typeof currentExam!=='undefined' && currentExam && timerInterval) saveProgress(); }catch(e){}
+  flushSubmitQueue();
+}
+
+window.addEventListener('online', handleOnline);
+window.addEventListener('offline', handleOffline);
+
+// Initial banner state on load (covers the case where the page itself was
+// opened while already offline, e.g. resuming after a power failure with
+// Wi-Fi not yet back).
+window.addEventListener('load', ()=>{
+  if(!navigator.onLine){
+    handleOffline();
+  } else if(getSubmitQueue().length>0){
+    flushSubmitQueue();
+  }
+});
+
+// ── PERIODIC AUTO-SAVE (every 5s while an exam is in progress) ──
+// সাবেক saveProgress() শুধু answer select / nav / beforeunload-এ চলত। এখন
+// প্রতি ৫ সেকেন্ডে independently চলবে, তাই power failure/crash হলেও বড়জোর
+// ৫ সেকেন্ডের progress হারানোর ঝুঁকি থাকবে।
+setInterval(()=>{
+  try{
+    if(typeof currentExam!=='undefined' && currentExam && typeof timerInterval!=='undefined' && timerInterval){
+      saveProgress();
+    }
+  }catch(e){}
+}, 5000);
+
+// ── HARDEN selectExam(): also block re-entry into an exam that's queued-but-not-yet-synced ──
+const oldSelectExam2=window.selectExam;
+if(oldSelectExam2){
+window.selectExam=async function(id){
+  const localDone=isExamQueuedLocally(id, studentName);
+  if(localDone){
+    showModal('⚠️','পরীক্ষা জমা দেওয়া হয়ে গেছে','আপনি এই পরীক্ষা ইতিমধ্যে জমা দিয়েছেন (সিঙ্ক হচ্ছে)। প্রতিটি পরীক্ষা শুধুমাত্র একবার দেওয়া যাবে।', null);
+    document.getElementById('modal-cancel').textContent='ঠিক আছে';
+    document.getElementById('modal-ok').style.display='none';
+    return;
+  }
+  return await oldSelectExam2.apply(this, arguments);
+};
+}
+</script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"
+  onload="renderKatexOnPage()"></script>
+<script>
+function renderKatexOnPage(){
+  // called once KaTeX auto-render is ready — nothing global needed yet
+}
+
+/**
+ * renderLatex(text)
+ * Converts a plain string that may contain LaTeX delimiters into HTML.
+ * Supports:
+ *   $$...$$  → display (block) mode
+ *   $...$    → inline mode
+ *   \(...\)  → inline mode
+ *   \[...\]  → display mode
+ * Falls back to escaped HTML if KaTeX hasn't loaded yet or parse fails.
+ */
+
+async function getAIExplanation(question, correctAnswer){
+  try{
+    const res = await fetch('/.netlify/functions/explain', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({
+        question,
+        answer: correctAnswer
+      })
+    });
+
+    const data = await res.json();
+    return data.explanation;
+  }catch(e){
+    return "AI explanation unavailable";
+  }
+}
+
+function renderLatex(text){
+  if(typeof text!=='string') return '';
+  // Escape HTML first on non-math segments
+  function escHtml(s){
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+  function tryRender(math, display){
+    if(typeof katex==='undefined') return escHtml(display?'$$'+math+'$$':'$'+math+'$');
+    try{ return katex.renderToString(math,{displayMode:display,throwOnError:false,output:'html'}); }
+    catch(e){ return escHtml(display?'$$'+math+'$$':'$'+math+'$'); }
+  }
+  // ── AUTO-DETECT RAW LaTeX (কোনো $ ছাড়াই সরাসরি লেখা LaTeX কমান্ড) ──
+  // অনেক প্রশ্ন/অপশনে $...$ দিয়ে wrap না করেই সরাসরি \text{CH}_3^+ এই ধরনের
+  // কমান্ড লেখা থাকে। কোনো $ / \( / \[ ডিলিমিটার না থাকলে, বাংলা অক্ষর না
+  // থাকলে, এবং \xxx{...} প্যাটার্ন পাওয়া গেলে পুরো টেক্সটটাকেই math হিসেবে
+  // রেন্ডার করি — এতে আলাদা করে প্রতিটি প্রশ্নে $ বসাতে হয় না।
+  const hasDelimiter = /\$|\\\(|\\\[/.test(text);
+  const hasBengali = /[\u0980-\u09FF]/.test(text);
+  const looksLikeRawLatex = /\\[a-zA-Z]+\{/.test(text);
+  if(!hasDelimiter && !hasBengali && looksLikeRawLatex){
+    return tryRender(text, false);
+  }
+  // Split on LaTeX delimiters, process each segment
+  // Order matters: check $$ before $
+  const parts=[];
+  let i=0;
+  while(i<text.length){
+    // \[ display
+    if(text.slice(i,i+2)==='\\['){
+      const end=text.indexOf('\\]',i+2);
+      if(end!==-1){ parts.push(tryRender(text.slice(i+2,end),true)); i=end+2; continue; }
+    }
+    // \( inline
+    if(text.slice(i,i+2)==='\\('){
+      const end=text.indexOf('\\)',i+2);
+      if(end!==-1){ parts.push(tryRender(text.slice(i+2,end),false)); i=end+2; continue; }
+    }
+    // $$ display
+    if(text.slice(i,i+2)==='$$'){
+      const end=text.indexOf('$$',i+2);
+      if(end!==-1){ parts.push(tryRender(text.slice(i+2,end),true)); i=end+2; continue; }
+    }
+    // $ inline
+    if(text[i]==='$'){
+      const end=text.indexOf('$',i+1);
+      if(end!==-1){ parts.push(tryRender(text.slice(i+1,end),false)); i=end+1; continue; }
+    }
+    // plain char — collect run of plain text
+    let j=i+1;
+    while(j<text.length){
+      if(text[j]==='$' || text.slice(j,j+2)==='\\(' || text.slice(j,j+2)==='\\[') break;
+      j++;
+    }
+    parts.push(escHtml(text.slice(i,j)));
+    i=j;
+  }
+  return parts.join('');
+}
+</script>
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<!-- LOADING OVERLAY -->
+<div id="loading-overlay" class="hide">
+  <div class="loader"></div>
+  <p id="loading-msg">লোড হচ্ছে...</p>
+</div>
+
+<!-- NETWORK STATUS BANNER -->
+<div id="net-status-banner" class="hide"><span class="ns-dot"></span><span id="net-status-text"></span></div>
+
+<!-- FULLSCREEN WARNING BANNER -->
+<div id="fs-warn-banner" class="hide"></div>
+
+<!-- EXAM ACCESS CODE MODAL -->
+<div id="code-modal-bg" class="hide">
+  <div id="code-modal-card">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:40px">🔑</div>
+      <h3 style="margin:8px 0 4px;color:#0f172a" id="code-modal-title">অ্যাক্সেস কোড দিন</h3>
+      <p style="color:#64748b;font-size:13px">এই পরীক্ষার জন্য কোড প্রয়োজন</p>
+    </div>
+    <div class="fgroup">
+      <input id="code-input" class="finput" placeholder="কোড লিখুন..." style="text-transform:uppercase;letter-spacing:3px;text-align:center;font-size:18px;font-weight:700" onkeydown="if(event.key==='Enter')verifyExamCode()"/>
+    </div>
+    <div id="code-err" style="color:#ef4444;font-size:12px;margin-bottom:10px;display:none">❌ ভুল কোড! আবার চেষ্টা করুন।</div>
+    <div style="display:flex;gap:10px">
+      <button class="btn ghost" style="flex:1;justify-content:center" onclick="closeCodeModal()">বাতিল</button>
+      <button class="btn blue" style="flex:1;justify-content:center" onclick="verifyExamCode()">প্রবেশ করুন →</button>
+    </div>
+  </div>
+</div>
+
+</body>
+
+</html>
