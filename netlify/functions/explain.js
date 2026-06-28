@@ -1,7 +1,10 @@
 exports.handler = async (event) => {
   try {
+    let data = {};
 
-    const data = event.body ? JSON.parse(event.body) : {};
+    if (event.body) {
+      data = JSON.parse(event.body);
+    }
 
     const question = data.question || "";
     const answer = data.answer || "";
@@ -9,15 +12,17 @@ exports.handler = async (event) => {
     return {
       statusCode: 200,
       body: JSON.stringify({
-        explanation: `AI test: ${question}`
+        explanation: `প্রশ্ন: ${question}
+উত্তর: ${answer}
+এটি AI explanation test`
       })
     };
 
   } catch (err) {
     return {
-      statusCode: 500,
+      statusCode: 200,
       body: JSON.stringify({
-        error: err.message
+        explanation: "AI explanation failed"
       })
     };
   }
